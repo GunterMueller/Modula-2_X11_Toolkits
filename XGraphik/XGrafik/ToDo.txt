@@ -1,0 +1,21 @@
+
+
+---------------------------------------------------------------------------
+Autor:  Michael Fischer                        Datum: 6.10.95
+
+Die Studenten des letzten ProPra, daß das Lehrgebiet Güting abgehalten hat,
+haben folgende Fehler in der Graphiclibrary gefunden:
+
+1. XGD_DrawString erzeugt einen Segmentation Vault wenn negative
+   X Y-Koordinaten übergeben werden.
+Behoben (6.10.95, AS)
+
+2. XGD_DrawLine erzeugt ab Strichstärke 3 nur waagerechte Striche
+
+Ausserdem gab es die Anregung die Fensterposition über die Kommandozeile
+angebbar zu machen, also die -g Option zu Implementieren.
+
+Anmerkungen:
+Zu 2: Nicht verifizierbare Aussage (siehe graftest.mi)
+Zur Angabe der Fensterposition: Die Option heisst -geometry.
+	Alexander

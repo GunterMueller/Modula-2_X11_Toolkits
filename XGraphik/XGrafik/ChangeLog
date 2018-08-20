@@ -1,0 +1,25 @@
+ChangeLog fuer XGrafik.
+
+Hier werden zu jeder benannten Version die Aenderungen zur
+Vorgaenger-Version dokumentiert.
+
+Version	(Autor der Dokumentation hier)
+
+V1_2	(Michael)
+-	Include-Files auf die einzelnen Module verteilt. Include.h
+-	enthaelt nun nur noch die fuer XGrafik benoetigten Include-
+-	Files. Alle System-Include-Files werden in den C-Modulen
+-	includiert.
+
+
+V1_1:	(Stefan)
+-	Versandversion und Version, die auf Leih-PCs kommt
+-	Filebrowser aufgenommen
+-	Fehler in der Eventbehandlung (mittlere Maustaste) behoben
+-	Code Kosmetik (unbenutzte Variablen geloescht, 
+		mehr Dokumentation im Code)
+
+V1_0:	(Stefan)
+-	erste Version von XGrafik
+-	an Studenten zur Einarbeitung verteilt
+

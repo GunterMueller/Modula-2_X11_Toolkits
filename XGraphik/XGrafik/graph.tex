@@ -1,0 +1,36 @@
+\setlength{\unitlength}{0.006250in}%
+%
+\begingroup\makeatletter
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\endgroup
+\begin{picture}(272,202)(331,421)
+\thicklines
+\put(577,447){\circle{52}}
+\put(357,449){\circle{52}}
+\put(442,579){\vector( 1,-1){ 76.500}}
+\put(557,465){\vector(-1, 1){ 76}}
+\put(424,597){\circle{52}}
+\put(552,447){\vector(-1, 0){123}}
+\put(513,518){\makebox(0,0)[lb]{\smash{\SetFigFont{12}{14.4}{it}\( 4 \)}}}
+\put(429,447){\line(-1, 0){ 46}}
+\put(431,459){\makebox(0,0)[lb]{\smash{\SetFigFont{12}{14.4}{it}\( 5 \)}}}
+\put(483,549){\makebox(0,0)[lb]{\smash{\SetFigFont{12}{14.4}{it}\( 7 \)}}}
+\end{picture}

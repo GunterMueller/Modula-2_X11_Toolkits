@@ -1,0 +1,466 @@
+\documentstyle[german,paper,din-a4,12pt,titlepage,twoside,epsf]{article}
+\pagestyle{myheadings}
+\def\headtitle{Programmierpraktikum: Visualisierung von Graphenalgorithmen}
+\markboth{\headtitle}{\headtitle}
+% Section headings only \large, not \Large
+\makeatletter\def\section{\@startsection{section}{1}{\z@}{-3.25ex plus-1ex
+    minus-.2ex}{1.5ex plus.2ex}{\reset@font\large\bf}}\makeatother
+\loadpictex
+\marginparwidth 10ex
+\newcommand\rand[1]{($^*$)\marginpar{\raggedright$^\ast$~#1}}
+\begin{document}
+\title{
+	{\large Aufgabenstellung zum Kurs 1587/1588\\
+	Programmierpraktikum im SS 94}\\[5ex]
+	\Huge\bf Visualisierung\\
+	von Graphenalgorithmen\\[12ex]%
+}
+\font\helvbigbold=phvb at 18pt
+\font\helvbold=phvb at 14pt
+\author{%
+	\epsfbox{/usr/local/lib/tex/localinputs/unilogo.hagen}\\
+	\helvbigbold FernUniversität Hagen\\
+	\helvbold Lehrgebiet Praktische Informatik VI
+}
+%
+\date{}
+\maketitle
+
+
+\sect{Graphen}{graphen}
+Graphen spielen in der Informatik eine sehr wichtige Rolle.
+Sie helfen bei der Lösung von so unterschiedlichen Problemen
+und Fragestellungen wie zum Beispiel:
+\begin{itemize}
+\item	Wieviele Farben braucht man mindestens zum Färben
+	einer bestimmten Landkarte?
+
+\item	Was ist der kürzeste Weg von hier nach dort in einem Bahn-, Straßen-
+	oder Flugnetz?
+
+\item	Wie kommt man aus einem Labyrinth heraus?
+
+\item	Wie optimiert man Transportkapazitäten auf einem Netz
+	(von z.B.\ Wasserstraßen oder Rohrleitungen)?
+
+\item	Wie erstellt man einen Fahrplan für ein Bahn- oder Bus-System?
+
+\item	In welcher Zeit kann eine Arbeit frühestens erledigt sein,
+	wenn sie aus mehreren Arbeitsabläufen besteht, die teilweise
+	nacheinander, teilweise gleichzeitig erledigt werden müssen?
+
+\item	Kann man eine Figur malen, ohne den Stift abzusetzen?
+
+\item	Kann man durch Umfüllen zwischen verschiedenen Gefäßen
+	eine bestimmte Menge abmessen?
+\end{itemize}
+
+Graphen sind also sehr vielfältig einsetzbare Datenstrukturen.
+Ein Vorteil von Graphen ist außerdem, daß sie sich leicht
+{\em graphisch} darstellen lassen und so dem Betrachter oder
+Benutzer sehr anschaulich sind.
+
+In diesem Programmierpraktikum wollen wir Graphen und Graphenalgorithmen
+dynamisch darstellen (visualisieren),
+was das Verständnis für das
+Funktionieren von Graphenalgorithmen sehr erleichtern kann.
+
+
+\sect{Graphenalgorithmen}{graphenalg}
+
+Die folgenden Grundbegriffe zu Graphen aus Kurseinheit~4
+des Kurses 1663 {\em Datenstrukturen} der FernUniversität
+werden im Praktikum als bekannt vorausgesetzt.
+Intensivere Einführungen
+finden sich im Kurs 1685 {\em Effiziente Graphenalgorithmen} und in einigen
+in der Literaturliste angegebenen Büchern.
+\begin{itemize}
+\item	Graph, Knoten, Kante, Knotengrad
+\item	gerichteter bzw. ungerichteter Graph
+\item	Pfad (Weg), Pfadlänge, Zyklus (Kreis)
+\item	markierte (gewichtete) Kanten, Pfadkosten
+\item	Adjazenzmatrix, Adjazenzlisten
+\end{itemize}
+Ein Graph heißt zusammenhängend,
+wenn je zwei Knoten stark verbunden sind
+(d.h.\ wenn es von jedem Knoten zu jedem anderen einen Weg gibt).
+
+
+Die folgende Liste enthält eine Reihe von interessanten Problemen
+und Algorithmen mit Graphen, die im Programmierpraktikum realisiert
+werden sollen
+(die ersten vier sind ebenfalls im Kurs 1663 enthalten).
+\begin{description}
+\item	[Tiefendurchlauf:]
+	Durchlaufart, die auch geeignet ist,
+	(sozusagen nebenbei) z.B.\ die Kreisfreiheit oder den Zusammenhang
+	eines Graphen zu überprüfen.	
+
+\item	[Breitendurchlauf:]
+	alternative Durchlaufart.
+
+\item	[Kürzeste Wege:]
+	Es sind die kürzesten Wege von einem bestimmten Knoten zu allen
+	übrigen (erreichbaren) Knoten zu bestimmen
+	(für gerichtete und ungerichtete Graphen mit Kantenmarkierungen).
+
+	Algorithmus von Dijkstra.
+
+\item	[Minimaler Spannbaum:]
+	Gesucht ist ein zusammenhängender Teilgraph mit minimalem
+	(über alle Kanten summiertem) Kantengewicht
+	(nur für ungerichtete Graphen mit Kantenmarkierungen).
+
+	Algorithmus von Kruskal.
+
+\item	[Topologisches Sortieren:]
+	Gesucht ist eine Ordnung der Knoten, d.h.\ jeder Knoten bekommt
+	eine Nummer, so daß folgende Bedingung erfüllt ist. Wenn eine
+	Kante von Knoten $i$ zu Knoten $j$ führt, dann ist $i < j$
+	(nur für gerichtete, kreisfreie Graphen).
+
+	Methode: Wir führen einen Tiefendurchlauf durch und benutzen
+	einen Stapel (Stack). Immer nachdem alle Nachfolger eines Knotens
+	bereits besucht wurden, wird der Knoten auf den
+	Stapel gelegt. Am Ende werden alle Knoten vom Stapel geholt und
+	der Reihe nach numeriert.
+
+\item	[Eulerscher Kreis:]
+	Dieses Problem ist auch als {\em Königsberger Brückenproblem}
+	bekannt und wurde zuerst von Leonhard Euler gelöst (1736).
+	Falls möglich, ist ein Kreis zu finden, der jede Kante des
+	Graphen genau einmal enthält. Ein Knoten kann jedoch mehrfach
+	besucht werden
+	(für gerichtete und ungerichtete Graphen).
+
+	Natürlich muß der Graph zumindest zusammenhängend sein.
+	Bei ungerichteten Graphen gibt es genau dann einen Eulerschen Kreis,
+	wenn darüberhinaus jeder Knotengrad eine gerade Zahl ist.
+	Bei gerichteten Graphen ist die entsprechende Bedingung:
+	Für jeden Knoten ist die Anzahl der eingehenden Kanten (in-degree)
+	gleich der Anzahl der ausgehenden Kanten (out-degree).
+
+	Methode: Ausgehend von einem beliebigen Knoten laufe immer wieder
+	an der nächstbesten Kante entlang, die noch nicht besucht wurde.
+	Falls es irgendwo keine freie Kante mehr gibt, so wurde gerade
+	ein (vorläufiger) Kreis geschlossen. Suche entlang dieses Kreises
+	einen Knoten, von dem eine noch nicht besuchte Kante ausgeht und
+	erweitere den Kreis von dort aus.
+
+	Variante des Problems: Wie kann man eine Figur (z.B.\texpicture{niko}~)
+	in einem Zug zeichnen? (nur für ungerichtete Graphen)
+
+	Es sollen also wieder alle Kanten einmal besucht werden,
+	der Weg braucht nur kein Kreis zu sein. Eine Lösung existiert
+	genau dann, wenn der Graph zusammenhängend ist und höchstens zwei
+	Knoten mit ungeradem Grad hat (diese müssen dann Endpunkte des
+	Weges sein). Die Konstruktion einer Lösung
+	geht sehr ähnlich wie eben, wenn man an solch einem Knoten mit
+	ungeradem Grad startet.
+
+\item	[Hamilton-Kreis:] Falls möglich, soll ein Kreis gefunden werden,
+	der jeden Knoten des Graphen genau einmal enthält. Die Kanten
+	brauchen nicht alle besucht zu werden
+	(für gerichtete und ungerichtete Graphen).
+
+	Es ist kein wirklich effizientes Verfahren zur Berechnung eines
+	Hamilton-Kreises bekannt. Die folgende Methode (Backtrack) sollte nur
+	für relativ kleine Graphen ausprobiert werden:
+	Ausgehend von einem beliebigen Knoten laufe immer wieder zu dem
+	nächstbesten Nachbarn, der noch nicht besucht wurde.
+	Falls es keinen solchen Nachbarn mehr gibt, dann gehe zurück,
+	entferne den letzten Schritt aus dem Weg und versuche einen
+	anderen Nachbarn, usw.
+	Wenn alle Knoten besucht wurden, dann versuche, den Kreis zu schließen.
+
+\item	[Travelling Salesman {\rm (dt.: Problem des Handlungsreisenden)}:]
+	Es ist der kür\-ze\-ste Kreis zu finden, der alle Knoten besucht.
+	Knoten und Kanten dürfen beliebig oft besucht werden
+	(nur für ungerichtete Graphen mit Kantenmarkierungen).
+
+	Auch hier ist kein effizientes Verfahren bekannt.
+	Man kann das Problem aber gut näherungsweise lösen.
+	Das folgende Verfahren findet einen Kreis,
+	der höchstens doppelt so lang ist wie der
+	kürzeste Kreis: Berechne den minimalen Spannbaum und
+	den darum herumlaufenden Kreis. Der noch sinnvoll weiter
+	abgekürzte Kreis (siehe~\reffig{tsp}) ist oft sehr nahe an
+	der optimalen Lösung.
+	
+\end{description}
+
+\texfig{Kreis mit Abkürzungen um einen minimalen Spannbaum}{tsp}
+
+
+\sect{Visualisierung von Algorithmen}{visu}
+Zweck der Visualisierung von Algorithmen ist es, dem Betrachter zu helfen,
+die prinzipielle Arbeitsweise eines Programms zu verstehen.
+Es gibt verschiedenste Arten der Visualisierung,
+z.B.\ Programmdaten, Quelltext oder anderes kann dynamisch dargestellt
+werden.
+
+Für unsere Graphenalgorithmen soll die Visualisierung ermöglichen,
+die Algorithmen Schritt für Schritt in der grafischen Darstellung zu verfolgen.
+Die Schrittsteuerung soll einstellbar sein auf:
+\begin{description}
+\item	[Einzelschritte:]
+	der Benutzer muß jeden Schritt einzeln bestätigen.
+
+\item	[Verlangsamter Ablauf:]
+	Die Einzelschritte werden automatisch nacheinander ausgeführt.
+	Die Wartezeit zwischen den Schritten soll einstellbar sein.
+
+\item	[Schnelldurchlauf:]
+	nur das Ergebnis wird angezeigt.
+\end{description}
+
+Der Benutzer kann während des Ablaufs zwichen Einzelschritten und verlangsamtem
+Ablauf hin- und herschalten sowie auch von beiden in den Schnelldurchlauf
+umschalten.
+
+Natürlich muß bei der Programmierung der Algorithmen jeweils gut überlegt werden,
+was ein sinnvoller Schritt ist. Die Einzelschritte beim {\em Tiefendurchlauf}
+könnten etwa folgendermaßen aussehen.
+
+Am Anfang sind alle Kanten und Knoten grau,
+außer dem Startknoten. Die im Moment besuchten Knoten werden jeweils rot
+dargestellt, bei Verlassen eines Knotens wird er grün.
+Beim Besuch eines Nachfolgeknotens wird die Kante dorthin rot
+und bei Verlassen wieder grau.
+Auf diese Weise ist immer genau der Weg vom Startknoten zum aktuellen
+Knoten rot, und alle schon besuchten Knoten sind grün oder rot.
+
+Ein anderes Beispiel für Knoten- und Kantenfärbung findet man
+bei der Darstellung des Algorithmus von Dijkstra in Kapitel~4.1.3
+im Kurs Datenstrukturen.
+
+
+\sect{Anforderungen an das zu erstellende System}{anford}
+Im Programmierpraktikum soll ein System zur Visualisierung von
+verschiedenen Graphenalgorithmen erarbeitet werden.
+Folgende Anforderungen soll das System mindestens erfüllen.
+\begin{itemize}
+\item	Die auftretenden Graphen können gerichtet oder ungerichtet sein,
+	können Kantenmarkierungen haben oder nicht, aber keine
+	Knotenmarkierungen. Sie sind schlicht,
+	d.h.\ zwischen zwei Knoten gibt es höchstens eine Kante,
+	und es gibt keine Schlingen (Kanten von einem Knoten zu sich selbst).
+
+\item	Ein Graph kann (über Maus/Tastatur) eingegeben, in einer
+	Datei abgespeichert,
+	wieder eingelesen und weiter verändert werden.
+
+\item	Knoten werden auf dem Bildschirm als Kreise, Kanten als
+	gerade Linien zwischen den Knoten dargestellt, gerichtete Kanten
+	mit Pfeil.
+
+\item	Jeder Knoten hat eine bestimmte Position auf dem
+	Bildschirm, die für den Benutzer leicht änderbar ist
+	(z.B.\ um den Graphen "`schöner"' darzustellen).
+	Zwischen je zwei Knoten ist ein gewisser Mindestabstand
+	einzuhalten.
+
+\item	Kantenmarkierungen werden in der Nähe der Kante (bzw.\ des Pfeils)
+	als Zahl auf dem Bildschirm gebracht.
+
+\texfig{Ein Beispiel für die Darstellung eines Graphen}{graph}
+
+\item	Ein ungerichteter Graph kann in einen gerichteten umgewandelt werden
+	(durch Verdopplung der Kanten) und umgekehrt.
+
+\item	Ein markierter Graph kann in einen unmarkierten verwandelt werden
+	und umgekehrt (mit Kantenmarkierung 1).
+
+\item	Ein bestimmter Knoten kann ausgezeichnet werden, z.B.\ zur Verwendung
+	als Startknoten im Tiefen- oder Breitendurchlauf oder
+	für kürzeste Wege.
+
+\item	In den Knoten können bestimmte Werte angezeigt werden, z.B.\ als
+	Ergebnis des topologischen Sortierens oder des kürzesten Weges
+	oder als Zwischenwerte bei Visualisierungen.
+
+\item	Die in \refsect{graphenalg} vorgestellen Algorithmen
+	werden realisiert und (wie in \refsect{visu} beschrieben) visualisiert.
+
+\item	Ein besonderer Zustand des Systems heißt {\em Euklidisch}.
+	Dies bedeutet, daß zwischen je zwei Knoten eine Kante
+	existiert (vollständiger Graph) mit der Markierung
+	des euklidischen Abstandes zwischen den beiden Knotenpositionen.
+	Änderungen der Knotenpositionen wirken sich unmittelbar auf
+	die Kantenmarkierungen aus (was im "`normalen"' Zustand nicht so ist).
+	In diesem Zustand werden keine Kantenmarkierungen angezeigt.
+
+\end{itemize}
+
+
+\sect{Aufgabenstellung für den Entwurf}{aufgabe}
+
+Da das Projekt später in der Programmiersprache Modula-2 implementiert
+werden soll, machen Sie sich bitte mit dem Modulkonzept von Modula-2
+vertraut, für den Entwurf insbesondere mit Definitionsmodulen, Import-
+und Exportbeziehungen.
+
+Ihre Aufgabe ist es zun"achst, einen Entwurf f"ur ein
+System zur {\em Visualisierung
+von Graphenalgorithmen} zu erstellen.
+Dieser Entwurf mu{\ss} folgende Teile enthalten:
+\begin{itemize}
+\item	Grobe Aufteilung des Gesamtsystems in Module
+	und Übersicht über die Importbeziehungen zwischen ihnen.
+
+\item	Beschreibung der Modulschnittstellen durch Angabe der
+	Definitionsmodule in Modula-2 und Kommentare dazu.
+	Hieraus müssen Art und Funktion der Module und der in den
+	Schnittstellen übergebenen Objekte
+	(Prozeduren, Variablen, Typen, \ldots)
+	klar hervorgehen.
+
+\item	Entwurf der Benutzeroberfläche auf der Basis des von uns
+	vorgegebenen Moduls XGraphic, siehe besondere Dokumentation.
+\end{itemize}
+
+\sect{Technische Voraussetzungen}{techn}
+
+\begin{description}
+\item	[Hardware:] ein Rechner mit 386er oder 486er Prozessor,
+	möglichst 8 Mb Hauptspeicher, 80 Mb freier Festplattenkapazität,
+	3.5{\tt"{}}-Diskettenlaufwerk,
+	Maus, VGA-Gra\-fik\-kar\-te und Farbmonitor.
+	Sie können einen solchen Rechner für die Dauer des Praktikums
+	von uns leihen.
+
+\item	[Betriebssystem:] LINUX, das frei erhältliche UNIX für PCs.
+
+	Wenn Sie einen Rechner von uns leihen, wird LINUX vorinstalliert.
+	Wenn Sie Ihren eigenen Rechner einsetzen möchten, dann können
+	Sie entweder den Rechner zur Installation zu uns bringen
+	oder den Satz von 15 Disketten anfordern und selbst installieren.
+
+% Das folgende gilt nicht immer, besser telefonisch genau abklären.
+%	Sie brauchen nichts von Ihrem vorhandenem Betriebssystem
+%	(z.B.~DOS) zu löschen, sofern genug freier Speicherplatz (s.o.)
+%	auf der Festplatte vorhanden ist, die Festplatte braucht nicht
+%	neu formatiert oder partitioniert zu werden.
+
+	Der Rechner kann nach der Installation wahlweise mit LINUX
+	oder mit dem ursprünglichen System betrieben werden.
+
+\item	[Benutzeroberfläche:] X-Windows, kommt zusammen mit LINUX.
+
+\item	[Programm-Entwicklungsumgebung:] MOCKA, enthält einen Compiler
+	für die Programmiersprache Modula 2 und wird zusammen mit
+	LINUX installiert.
+
+\item	[Programm-Bibliothek:] Zur Vereinfachung der Programmierung mit
+	X-Windows erhalten Sie die Bibliohek XGraphic,
+	die alle für das Praktikum notwendigen Unterprogramme enthält,
+	um eine eigene Benutzeroberfläche zu schaffen
+	(Menüs, Buttons, Grafik, Text).
+\end{description}
+
+
+\sect{Dateiformat}{dateiformat}
+Damit abgespeicherte Graphen auch zwischen den Arbeitsgruppen
+ausgetauscht werden können, wird das Dateiformat vorgegeben.
+ 
+Idee:   Jeder Knoten und jede Kante soll einen eindeutigen Schlüssel
+        besitzen. Anhand dieses Schlüssels werden später die Knoten
+        und Kanten identifiziert.
+        Weitere Daten werden in Attributlisten angegeben.
+\bigskip
+
+\noindent
+Die Grammatik für das Dateiformat:
+{\footnotesize
+\begin{verbatim}
+Data                    ::=     Header {Node-Data} {Edge-Data} '.'
+
+Header                  ::=     '(' [Graph-Attribut { ';' Graph-Attribut }] ')'
+Graph-Attribut          ::=     'directed' ( 'yes' | 'no' ) |
+                                'weighted' ( 'yes' | 'no' ) |
+                                'startnode' key             |
+                                'destnode' key              | ...
+ 
+Node-Data               ::=     '( node' key ';' '[' Node-Attribut-List '] )'
+Node-Attribut-List      ::=     [ Node-Attribut { ';' Node-Attribut } ]
+Node-Attribut           ::=     'position' x-coord y-coord | ...
+ 
+Edge-Data               ::=     '( edge' key ';' Sourcenode-Key ';'
+                                Targetnode-Key ';' '[' Edge-Attribut-List '] )'
+Edge-Attribut-List      ::=     [ Edge-Attribut { ';' Edge-Attribut } ]         
+Edge-Attribut           ::=     'weight' zahl | ...
+
+Key			::=	integer
+
+\end{verbatim}
+}% Ende \footnotesize 
+
+\noindent
+Eine Beispieldatei für einen ungerichteten Graphen mit 4 Knoten
+sowie Kanten zwischen Knoten 1 und 3, 2 und 4:
+
+{\footnotesize 
+\begin{verbatim}
+(directed no; startnode 3)
+(node 1; [position 120 130])
+(node 2; [position 120 140])
+(node 3; [position 90 150])
+(node 4; [position 130 140])
+(edge 1; 1; 3; [weight 45])
+(edge 2; 4; 2; [weight 10])
+.
+\end{verbatim}
+}% Ende \footnotesize
+
+Wenn nicht angegeben, so gilt {\tt (directed yes; weighted yes)}
+als Voreinstellung der Graphenattribute, d.h.\ gerichteter, markierter Graph.
+
+Bei Bedarf können weitere Graphen-, Knoten- und Kantenattribute neu
+hinzudefiniert werden, z.B.\ {\tt [name Hagen; color blue]}.
+Es ist darauf zu achten, daß beim Einlesen nicht bekannte Attribute
+einfach ignoriert werden.
+
+
+\begin{thebibliography}{9}
+\bibitem{Linux} S.~Hetze u.a.
+	{\it Linux-Anwenderhandbuch und Leitfaden für die Systemverwaltung}.
+	LunetIX Softfair, ISBN 3-929764-02-4, 1994.
+\bibitem{Unix}	J.~Gulbins.
+	{\it UNIX}.
+	Springer-Verlag, 1988.
+\bibitem{Dal}
+	M.~Dal~Cin, J.~Lutz, T.~Risse.
+	{\it Programmierung in Modula-2}.
+	B.~G.~Teubner, Stuttgart, 1989.
+\bibitem{Gut}
+	R.~H.~G"uting.
+	{\it Datenstrukturen}.
+	FernUniversität Hagen, Kurs 1663, 1993.
+\bibitem{Ott}
+	Ottmann und Widmayer.
+	{\it Algorithmen und Datenstrukturen}.
+	BI-Wiss.-Verl., 1990.
+\bibitem{Puc}
+	J.~Puchan, W.~Stucky, J.~Wolff von Gudenberg.
+	{\it Programmieren mit Modula-2}.
+	B.~G.~Teubner, Stuttgart, 1991.
+\bibitem{Pom}
+	G.~Pomberger.
+	{\it Softwaretechnik und Modula-2}.
+	Hanser Verlag, München, 1987.
+\bibitem{Som}
+	I.~Sommerville. {\it Software Engineering}.
+	Addison-Wesley, Bonn, 1989.
+\bibitem{Hen}
+	A.~Henrich, B.-U.~Pagel, H.~W.~Six.
+	{\it Software Engineering}
+	(Kurseinheit 1: Einführung in Modula-2,
+	Kurseinheit 2: Software Engineering, Historie, Einordnung, heutiger 
+	Stand).
+	FernUniversität Hagen, Kurs 1792, 1992.
+\end{thebibliography}
+
+
+\end{document}
+
+

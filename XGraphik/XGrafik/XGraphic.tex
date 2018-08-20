@@ -1,0 +1,1014 @@
+\documentstyle[german,din-a4,listing]{article}
+%\makeindex
+\pagestyle{headings}
+
+\title{XGraphic-Bibliothek}
+\author{Alexander Sch"olling \and
+Stefan Wohlfeil}
+\date{M"arz 1994; aktualisiert im August 1995}
+
+\begin{document}
+% Auf das Inhaltsverzeichnis verzichten wir besser.
+% 15.3 Stefan
+% \tableofcontents
+% \pagebreak
+\maketitle
+
+
+
+
+
+\section{Einf"uhrung}
+
+ Die Programmierung unter einem graphischen Fenstersystem (wie z.B. 
+ X-Windows) unterscheidet sich grundlegend von der Programmierung auf
+ zeilenorientierten Terminals.
+ Dort hat in der Regel das Programm den Benutzer gef"uhrt. Brauchte
+ das Programm verschiedene Eingaben vom Benutzer, so hat es diese
+ nacheinander, z.B. durch Men"us abgefragt. Ein Benutzer konnte also
+ immer nur eine bestimmte Eingabe machen.
+
+ Ein typisches Programmst"uck sah wie folgt aus:
+\begin{verbatim}
+ REPEAT
+    ZeigeMenue1();
+    Taste := LeseTastatur()
+ UNTIL ErlaubtInMenue1 (Taste);
+ REPEAT
+    ZeigeMenue2();
+    Taste := LeseTastatur()
+ UNTIL ErlaubtInMenue2 (Taste);
+ ...
+\end{verbatim}
+
+ Heutzutage m"ochte ein Benutzer sich aber nicht vom Programm vorschreiben
+ lassen, wann er welche Eingaben machen mu"s. Das Programm soll auf die
+ Eingaben des Benutzers reagieren. Aus Sicht des Programms treten also
+ st"andig Ereignisse auf, auf die das Programm reagieren mu"s. M"ogliche
+ Ereignisse sind:
+
+\begin{itemize}
+   \item Taste gedr"uckt bzw. losgelassen
+   \item rechter/mittlerer/linker Mausknopf gedr"uckt bzw. losgelassen
+   \item Mauszeiger ist in einen bestimmten Bildschirmbereich eingetreten
+   \item ...
+\end{itemize}
+
+ Au"serdem hat man heute in der Regel mehrere Programme gleichzeitig
+ auf einem Computer laufen. Daher m"ussen die auftretenden Ereignisse
+ dem richtigen Programm zugeordnet werden. Dr"uckt der Benutzer z.B.
+ eine Taste, so mu"s entschieden werden welches Programm auf diesen
+ Tastendruck reagieren soll.
+ 
+ Ein typisches Programmst"uck sah wie folgt aus:
+\begin{verbatim}
+ REPEAT
+    Ereignis := HoleEreignis();
+    BearbeiteEreignis (Ereignis);
+ UNTIL fertig;
+
+ PROCEDURE BearbeiteEreignis ( Ereignis : ... );
+ BEGIN
+    CASE Ereignis OF
+
+       (* lange Liste aller moeglichen Ereignisse *)
+
+    END; (* CASE *)
+ END; (* BearbeiteEreignis *)
+\end{verbatim}
+
+ Um sich die Programmierung zu erleichtern gibt es nun verschiedene
+ Bibliotheken, die einige, immer gleich zu behandelnde Ereignisse
+ bearbeiten und ansonsten die Ereignisse automatisch an das richtige
+ Programm weiterleiten. Als Programmierer mu"s man nur noch angeben,
+ welche der selbstgeschriebenen Funktionen bei einem bestimmten
+ Ereignis aufgerufen werden soll.
+
+ Der typische Ablauf dabei ist wie folgt: Zun"achst erzeugt der
+ Programmierer die Objekte (Fenster, Menues, Scrollbalken, Kn"opfe, etc.)
+ aus denen die Oberfl"ache bestehen soll. Anschliessend wird eine
+ Prozedur aufgerufen, die die eintretenden Ereignisse "uberwacht und
+ die jeweiligen Funktionen, die der Programmierer bei der Erzeugung
+ der Objekte angegeben hat, aufruft.
+
+ Ein typisches Programmst"uck sieht wie folgt aus:
+\begin{verbatim}
+ PROCEDURE BearbeiteKnopf ( ... (* Parameter siehe jeweils im Handbuch *) );
+ BEGIN
+    WriteString("Der Knopf wurde gedrueckt!");
+ END;
+
+ BEGIN
+ ...
+ Erzeuge_Objekt( Knopf, 
+     KnopfText,  "Hier druecken!",
+     KnopfKoordinaten,   100, 100,
+     KnopfEventHandler,  BearbeiteKnopf, (* Hier wird als Parameter die   *)
+                                         (* Adresse einer Prozedur ueber- *)
+                                         (* geben.                        *)
+     ENDE );
+
+ Hauptschleife();
+ END.
+\end{verbatim}
+
+ In der Prozedur Hauptschleife, die vom System zur Verf"ugung gestellt wird,
+ werden alle auftretenden Events bearbeitet und bei Bedarf die vom
+ Programmierer geschriebenen Funktionen (BearbeiteKnopf) aufgerufen.
+ Mehr zu diesem Thema k"onnen Sie u.a. im Kurs 1817 {\em Programmierung
+ graphischer Benutzerschnittstellen} nachlesen.
+
+ Welche Objekte vorhanden sind, welche Attribute (z.B. Koordinaten) ein
+ bestimmtes Objekt haben kann, wie die Parameterliste der zu
+ programmierenden Call-back Funktionen (BearbeiteKnopf) genau aussieht
+ und viele weitere Details mu"s der Programmierer den Handb"uchern der
+ Bibliothek entnehmen. Der typische Umfang dieser Handb"ucher liegt
+ bei ca. 600 Seiten. Damit Sie sich im Praktikum nun nicht mit allen
+ Details befassen m"ussen, habe wir eine kleine Bibliothek mit den
+ wichtigsten Funktionen f"ur Sie erstellt.
+ 
+
+
+%
+% Noch einen Abschnitt zu Toolkits wie xview einfuegen!
+% Werde ich (Stefan) noch schreiben.
+%
+% 14.3.94 Erledigt.
+%
+
+Die Bibliothek XGraphic erleichtert Ihnen die Programmierung von
+unter X Windows ablaufenden Programmen, indem sie
+etliche Routinearbeiten bereits
+erledigt. Dazu geh"ort zum Beispiel der vordefinierte Button QUIT mit der
+dazugeh"origen Funktion; dadurch brauchen Sie sich nicht mehr darum k"ummern,
+da"s ein Benutzer Ihr Programm beenden kann. Auch wird die Programmierung von
+Men"us auf die Verwendung von drei Befehlen mit wenigen Parametern
+reduziert. Die Bibliothek stellt Ihnen weiterhin einfache Befehle zur
+Verf"ugung, um herauszufinden, wo sich die Maus befindet oder welche Taste
+gedr"uckt wurde. In Kapitel \ref{Beispiel} sind zwei Beispielprogramme
+abgedruckt. Das Erste ist das k"urzestm"ogliche Beispielprogramm, es tut nichts
+au"ser ein Fenster auf den Bildschirm bringen. In diesem Fenster passiert
+aber nichts. Das zweite Beispielprogramm erledigt bereits eine einfache
+Benutzerkommunikation mit zwei einfachen Men"us und einem einfachen Malteil.
+
+
+
+
+
+\section{Namenskonventionen}
+Alle Funktionsnamen aus der Library beginnen in jedem Fall mit den
+Gro"sbuchstaben XG, gefolgt von entweder einem Unterstrich oder einem
+weiteren Gro"sbuchstaben und einem Unterstrich. Dieses K"urzel gibt die
+Zugeh"origkeit der Funktion zu einer der folgenden Kategorien an:
+\begin{itemize}\index{Funktionsgruppen}
+   \item[XG]{Allgemeine Funktionen, Initialisierung des Systems und
+       Start der Hauptschleife. Siehe Kapitel: \ref{XG}.}
+   \item[XGM]{Men"ufunktionen, Definition und "Anderung von
+       Men"us. Siehe Kapitel: \ref{XGM}.}
+   \item[XGF]{Fu"szeilen-Funktionen, Textausgabe in die
+       Fu"szeile des Fensters. Siehe Kapitel: \ref{XGF}.}
+   \item[XGN]{Ein-/Ausgabe-Funktionen, Funktionen f"ur
+       Mitteilungsfenster und Eingabefenster. Siehe Kapitel: \ref{XGN}.}
+   \item[XGD]{Malfunktionen, Funktionen zum Zeichnen
+       und Schreiben in den Malbereich des Fensters. Siehe Kapitel: \ref{XGD}.}
+   \item[XGE]{Event-Behandlung, Funktionen zur Aufschl"u"sellung
+       von Events. Kapitel \ref{XGE}.}
+\end{itemize}
+
+
+
+
+
+\section{Funktionsdefinitionen}
+In diesem Abschnitt stellen wir Ihnen die einzelnen Funktionen der
+Library vor. Zu jeder Funktion geben wir eine Erkl"arung zu den
+Parametern der Funktion, sowie eine kurze Beschreibung was die
+Funktion macht. Die genauen Namen der Funktion, die Typen der
+Parameter, die Reihenfolge der Parameter, etc. entnehmen Sie dem
+Definitionsmodul zu unserer Library, das Sie unter dem Pfad
+\begin{verbatim}
+/usr/local/mocka/lib/XGraphic.md
+\end{verbatim}
+finden k"onnen.
+
+%
+% evtl. einen Verweis einfuegen, wo der Definition Module zu
+% finden ist. Das muss nicht hier im Dokument sein.
+%
+% abgehakt, Alexander, 9.3.94
+
+
+\subsection{Allgemeine Funktionen\label{XG}}
+
+
+\subsubsection{\underline{Init}\index{Init}}
+
+\paragraph{Syntax}
+
+\begin{verbatim}
+XG_Init (AnzahlParameter, ParameterListe, PROC(RepaintCallback), PROC(EventCallback));
+\end{verbatim}
+
+\paragraph{Parameter}
+%
+% Das Wort Parameter steht schon vor dem Paragraphen. Also sollte
+% es darin nicht unnoetig wiederholt werden.
+% Daraufhin sollten alle Parameterbeschreibungen noch einmal
+% durchgesehen werden.
+%
+"Ubergeben werden die Anzahl und eine Tabelle der Kommandozeilen-Parameter
+sowie die Addressen der beiden ben"otigten Callback-Funktionen.
+
+
+\paragraph{Funktionalit"at}
+Das Programmfenster wird auf den Bildschirm gebracht und initialisiert.
+
+
+\subsubsection{\underline{StartMainLoop}\index{StartmainLoop}}
+
+
+\paragraph{Syntax}
+
+\begin{verbatim}
+XG_StartMainLoop();
+\end{verbatim}
+
+\paragraph{Parameter}
+Keine.
+
+\paragraph{Funktionalit"at}
+Die Abarbeitung des sogenannten Mainloops wird gestartet. Von diesem Moment
+an liegt die Ausf"uhrung beim Event-Handler und den Callbacks der Men"us.
+Das Programm wird erst dann weiter ausgef"uhrt, wenn ein Event vorliegt.
+
+
+
+\subsection{Men"u-Definition\label{XGM}}
+
+
+\subsubsection{\underline{NewMenu}\index{NewMenu}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+IntVar := XGM_NewMenu (LabelString);
+\end{verbatim}
+
+
+\paragraph{Parameter}
+Eine Zeichenkette (Men"u-Label).
+
+
+\paragraph{Funktionalit"at}
+Einleiten der Definition eines neuen Men"us. Es wird ein Handle auf das Men"u
+zur"uckgeliefert, mit dessen Hilfe sp"ater im Programm einzelne Men"upunkte
+deaktiviert und wieder aktiviert werden k"onnen.
+
+\subsubsection{\underline{AppendItem}\index{AppendItem}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGM_AppendItem (MenuHandle, ItemString);
+\end{verbatim}
+
+\paragraph{Parameter}
+Eine Zeichenkette sowie der Handle aus dem Aufruf von NewMenu.
+
+\paragraph{Funktionalit"at}
+Ein Men"upunkt wird an das Men"u angeh"angt.
+
+\subsubsection{\underline{CreateMenu}\index{CreateMenu}}
+
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGN_CreateMenu (HMenuHandle, PROC(MenuCallbackProc))
+\end{verbatim}
+
+\paragraph{Parameter}
+Addresse der Men"u-Callback-Funktion.
+Handle des Men"us.
+
+\paragraph{Funktionalit"at}
+Diese Funktion schlie"st die Definition eines Men"us ab. Erst mit diesem
+Aufruf wird das Men"u wirklich erzeugt und in das Fenster eingebaut!
+
+
+\subsubsection{\underline{SetItemActivity}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGM_SetItemActivity (MenuHandle, ItemNumber, StatusFlag);
+\end{verbatim}
+
+\paragraph{Parameter}
+"Ubergeben werden der Men"uhandle, die laufende Nummer des zu bearbeitenden
+Eintrags (Nummerierung beginnt mit eins) sowie der neue Status (Bool'scher Wert,
+TRUE entspricht ausw"ahlbar, FALSE inaktiv).
+
+\paragraph{Funktionalit"at}
+Mit SetItemActivity k"onnen einzelne Punkte von Men"us desaktiviert bzw.
+reaktiviert werden.
+
+
+\subsection{Fu"szeilen bearbeiten\label{XGF}}
+
+
+\subsubsection{\underline{SetLeft}\index{SetLeft}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGF_SetLeft (StringConst);
+\end{verbatim}
+
+\paragraph{Parameter}
+Eine Zeichenkette (anzuzeigender String).
+
+\paragraph{Funktionalit"at}
+Der "ubergebene String wird in der linken Fu"szeile angezeigt und
+"uberschreibt damit den bisher dort angezeigten Text.
+
+
+\subsubsection{\underline{SetRight}\index{SetRight}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGM_SetRight (StringConst);
+\end{verbatim}
+
+\paragraph{Parameter}
+Eine Zeichenkette (anzuzeigender String).
+
+\paragraph{Funktionalit"at}
+Der "ubergebene String wird in der rechten Fu"szeile angezeigt und
+"uberschreibt damit den bisher dort angezeigten Text.
+
+
+\subsubsection{\underline{SetDefault}\index{SetDefault}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGM_SetDefault();
+\end{verbatim}
+
+\paragraph{Parameter}
+Keine.
+
+\paragraph{Funktionalit"at}
+Der Text in den Fu"szeilen wird durch den Standard-Text ersetzt
+(Links: Copyright-Meldung; Rechts: Versions-Nummer).
+
+
+
+
+\subsection{Ein-/Ausgabe-Fenster\label{XGN}}
+
+
+\subsubsection{\underline{InputInt}\index{InputInt}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGN_InputInt (PromptString, InitialValue, MinValue, MaxValue, NumberOfTicks);
+\end{verbatim}
+
+\paragraph{Parameter}
+Eine Zeichenkette (Prompt), Vorgabewert, Untergrenze, Obergrenze, Anzahl Unterteilungen.
+
+\paragraph{Funktionalit"at}
+Es wird ein Fenster angezeigt, in dem der Benutzer durch Verschieben
+des Sliders eine Zahl im angegebenen Bereich eingeben kann. Es werden
+keine Events generiert, bevor der Benutzer eine Zahl eingegeben hat.
+Das Fenster enth"alt zwei Buttons, die mit OK und CANCEL beschriftet
+sind. Egal welcher Button gedr"uckt wird, mit der Funktion GetLastInteger
+wird in jedem Fall der gew"ahlte Wert geliefert. Weitere Erl"auterungen
+unter der Funktion GetlastInteger.
+
+
+\subsubsection{\underline{GetlastInteger}\index{GetLastInteger}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+BoolVar := XGN_GetLastInteger (IntVar);
+\end{verbatim}
+
+\paragraph{Parameter}
+Eine INTEGER-Variable.
+
+
+\paragraph{Funktionalit"at}
+Mit dieser Funktion kann der letzte eingegebene Wert erfragt werden.
+Der R"uckgabewert ist TRUE, wenn der Benutzer den OK-Button dr"uckte,
+FALSE sonst.
+
+\subsubsection{\underline{InputString}\index{InputString}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGN_InputString (LabelString);
+\end{verbatim}
+
+\paragraph{Parameter}
+Eine Zeichenkette (Prompt).
+
+\paragraph{Funktionalit"at}
+Wie auch InputInt bringt InputString ein Fenster auf den Bildschirm, in
+dem der Benutzer einen Text eingeben kann. Die Generierung von Events
+ist blockiert, bis der Benutzer einen der beiden Buttons anklickt.
+
+
+\subsubsection{\underline{GetLastString}\index{GetlastString}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+BoolVar := XGN_GetLastString (StringVar);
+\end{verbatim}
+
+\paragraph{Parameter}
+Eine String-Variable.
+
+
+\paragraph{Funktionalit"at}
+Wenn der Benutzer die Eingabe durch den Button OK abgeschlo"sen hat, so
+wird TRUE als R"uckgabewert geliefert. Wurde der CANCEL-Button
+angeklickt, so wird FALSE zur"uckgegeben und als Text wird "CANCELLED"
+geliefert.
+
+
+\subsubsection{\underline{ShowNotice}\index{ShowNotice}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGN_ShowNotice (StringConst);
+\end{verbatim}
+
+\paragraph{Parameter}
+Eine Zeichenkette (Auszugebender Text).
+
+
+\paragraph{Funktionalit"at}
+Die Ausf"uhrung des Programms wird solange angehalten, bis der Benutzer
+"uber den OK-Button die Anzeige quittiert hat. Der Text kann Newline-Zeichen
+(ASCII 13) enthalten, um einen Zeilenumbruch des Textes zu erzwingen.
+
+
+
+\subsubsection{\underline{FileSelector}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGN_FileSelector (MaskString);
+\end{verbatim}
+
+\paragraph{Parameter}
+Eine Zeichenkette (regul"arer Ausdruck), die die anzuzeigenden Dateien angibt.
+
+\paragraph{Funktionalit"at}
+Es wird eine Fileselector-Box auf den Bildschirm gebracht, die den Inhalt des
+aktuellen Verzeichnisses alphabetisch sortiert (Verzeichnisse vor Dateien)
+anzeigt.
+
+\subsubsection{\underline{GetFileName}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+BoolVar := XGN_GetFileName (StringVar);
+\end{verbatim}
+
+\paragraph{Parameter}
+Eine Stringvariable.
+
+\paragraph{Funktionalit"at}
+Wie auch bei GetLastInteger und GetLastString wird hier der zuletzt eingegebene
+Wert (Dateiname inkl. Pfad) sowie der gedr"uckte Button (TRUE entspricht OPEN)
+geliefert.
+
+\subsubsection{\underline{YesOrNo}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+BoolVar := XGN_YesOrNo (StringConst);
+\end{verbatim}
+
+\paragraph{Parameter}
+Zeichenkette.
+
+\paragraph{Funktionalit"at}
+Diese Funktion gibt eine Notice aus (siehe ShowNotice), die jedoch zwei Buttons
+enth"alt (YES und NO). TRUE wird geliefert, wenn YES gedr"uckt wurde, FALSE sonst.
+
+\subsection{Malfunktionen\label{XGD}}
+%
+% Hier koennten wir auch kurz etwas zum verwendeten Koordinatensystem
+% sagen. Wo liegt (0,0) und in welche Richtung zeigen steigende x bzw.
+% y Werte? Welches ist der maximale x bzw. y Wert?
+%
+Der Wertebereich der Koordinaten liegt zwischen $(0, 0)$ und $(9999, 9999)$,
+der Ursprung liegt in der oberen linken Ecke. Bei allen Funktionen wird zuerst
+die X-Koordinate angegeben. Die Farben sind als Aufz"ahlungstyp im Definitions-
+Modul abgelegt.
+
+\subsubsection{\underline{BeginPoly}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGD_BeginPoly (MaxN);
+\end{verbatim}
+
+\paragraph{Parameter}
+"Ubergeben wird die gew"unschte Maximalzahl von Polygonpunkten.
+
+\paragraph{Funktionalit"at}
+Leitet die Definition eines zu malenden Polygons oder Linienzuges ein.
+
+\subsubsection{\underline{AddPolyPoint}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGD_AddPolyPoint (px, py);
+\end{verbatim}
+
+\paragraph{Parameter}
+Die Koordinaten des neuen Polygonpunktes. Wenn mehr Aufrufe erfolgen, als
+Polygonpunkte bei BeginPoly angegeben waren, so werden die zus"atzlichen
+Punkte ignoriert. Um ein Polygon zu schliessen, wird {\em nicht} der Startpunkt
+nocheinmal als letzter Punkt angegeben!
+
+\paragraph{Funktionalit"at}
+Anf"ugen eines Punktes an das mit BeginPoly eingeleitete Polygon.
+
+\subsubsection{\underline{DrawPoly}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGD_DrawPoly (Closed, Filled, Width, Color);
+\end{verbatim}
+
+\paragraph{Parameter}
+Zwei Bool'sche Werte (Closed und Filled), die angeben, ob das Polygon
+geschlo"sen bzw. gef"ullt ist. Die Breite, in der die Linien gezeichnet
+werden sowie die Farbe.
+
+\paragraph{Funktionalit"at}
+Schlie"st die Definition eines Polygons oder eines Linienzuges ab und malt ihn.
+Wenn $Closed = TRUE$, so wird eine Linie vom letzten zum ersten Punkt
+gezeichnet. Wenn $Filled = TRUE$, so wird das Polygon in der angegebenen Farbe
+gef"ullt. Es wird dann nat"urlich auch geschlossen.
+
+
+\subsubsection{\underline{DrawLine}\index{DrawLine}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGD_DrawLine (StartX, StartY, EndX, EndY, Breite, Farbe);
+\end{verbatim}
+
+\paragraph{Parameter}
+F"unf ganze Zahlen (Anfangs- und Endkoordinaten, Liniendicke).
+Element von tColor (Farbe).
+
+
+\paragraph{Funktionalit"at}
+Die Funktion zeichnet eine Linie vom Start- zum Endpunkt in der angegebenen
+Dicke und Farbe.
+
+
+\subsubsection{\underline{DrawCircle}\index{DrawCircle}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGD_DrawCircle (CenterX, CenterY, Radius, Filled, Color);
+\end{verbatim}
+
+\paragraph{Parameter}
+Vier ganze Zahlen (Mittelpunkts-Koordinaten, Radius, Farbe).
+Ein Wahrheitswert, der angibt, ob der Kreis gef"ullft werden soll.
+
+\paragraph{Funktionalit"at}
+Die Funktion zeichnet einen Kreis mit dem gew"unschten Radius um den
+angegebenen Mittelpunkt in der angegebenen Farbe. Wenn Filled TRUE ist,
+so wird der Kreis in der entsprechenden Farbe ausgef"ullt.
+
+
+\subsubsection{\underline{DrawString}\index{DrawString}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGD_DrawString (PosX, PosY, Text, Color);
+\end{verbatim}
+
+\paragraph{Parameter}
+Zwei ganze Zahlen (Koordinaten), die Farbe und eine Zeichenkette.
+
+\paragraph{Funktionalit"at}
+Die "ubergebene Zeichenkette wird in der angegebenen Farbe ausgegeben.
+Die "ubergebenen Koordinaten bezeichnen die linke untere Ecke der Bounding
+Box!
+
+
+\subsubsection{\underline{Clear}\index{Clear}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGD_Clear();
+\end{verbatim}
+
+\paragraph{Parameter}
+Keine.
+
+\paragraph{Funktionalit"at}
+Der Malbereich des Programmfensters wird gel"oscht.
+
+\subsubsection{\underline{DrawArrowLine}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGD_DrawArrowLine(StartX, StartY, EndX, EndY, Width, Color);
+\end{verbatim}
+
+\paragraph{Parameter}
+Erl"auterungen siehe DrawLine.
+
+\paragraph{Funktionalit"at}
+Es wird eine Linie zwischen den angegebenen Punkten gemalt. Bei 60 Prozent
+der L"ange befindet sich eine Pfeilspitze.
+
+\subsubsection{\underline{Flush}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+XGD_Flush();
+\end{verbatim}
+
+\paragraph{Parameter}
+Keine.
+
+\paragraph{Funktionalit"at}
+Der Windowmanager wird gezwungen, ein Repaint durchzuf"uhren (wird ben"otigt,
+wenn z.B. als Folge eines animierten Ablaufs eines Malvorgangs ein Repaint
+ben"otigt w"urde, jedoch nicht automatisch ausgef"uhrt wird.
+
+\subsection{Event-Behandlung\label{XGE}}
+
+
+\subsubsection{\underline{Button\_L}\index{Button\_L}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+BoolVar := XGE_Button_L();
+\end{verbatim}
+
+\paragraph{Parameter}
+Keine.
+
+\paragraph{Funktionalit"at}
+Diese Funktion gibt zur"uck, ob der Event durch die linke Maustaste
+ausgel"ost wurde (R"uckgabewert TRUE) oder nicht.
+
+
+\subsubsection{\underline{Button\_M}\index{Button\_M}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+BoolVar := XGE_Button_M();
+\end{verbatim}
+
+\paragraph{Parameter}
+Keine.
+
+\paragraph{Funktionalit"at}
+Diese Funktion arbeitet wie Button\_L, gibt jedoch an, ob die mittlere
+Maustaste den Event ausgel"ost hat.
+
+
+\subsubsection{\underline{Button\_R}\index{Button\_R}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+BoolVar := XGE_Button_R();
+\end{verbatim}
+
+\paragraph{Parameter}
+Keine.
+
+\paragraph{Funktionalit"at}
+Wie Button\_L, jedoch f"ur die rechte Maustaste.
+
+
+\subsubsection{\underline{X\_Position}\index{Position\_X}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+IntVar := XGE_X_Position();
+\end{verbatim}
+
+\paragraph{Parameter}
+Keine.
+
+\paragraph{Funktionalit"at}
+Die X-Koordinate der Maus zum Zeitpunkt des Eintretens des Events.
+
+
+\subsubsection{\underline{Y\_Position}\index{Y\_Position}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+IntVar := XGE_Y_Position();
+\end{verbatim}
+
+\paragraph{Parameter}
+Keine.
+
+\paragraph{Funktionalit"at}
+Wie X\_Position, jedoch f"ur die Y-Koordinate.
+
+
+\subsubsection{\underline{KeyCode}\index{KeyCode}}
+
+
+\paragraph{Syntax}
+\begin{verbatim}
+CharVar := XGE_KeyCode();
+\end{verbatim}
+\paragraph{Parameter}
+Keine.
+
+\paragraph{Funktionalit"at}
+Als R"uckgabewert wird der ASCII-Code des Zeichens geliefert, das
+den aktuellen Event ausgel"ost hat, beziehungsweise das Null-Zeichen,
+wenn keine Taste f"ur den Event verantwortlich war.
+
+
+
+
+\section{Beispiele\label{Beispiel}}
+
+
+
+
+\subsection{Einfachstes Programm}
+\begin{verbatim}
+MODULE SimpleX;
+
+FROM Arguments IMPORT GetArgs, ArgTable;
+
+FROM XGraphic IMPORT XG_Init, XG_StartMainLoop;
+
+PROCEDURE Event() : BOOLEAN;
+BEGIN
+(* Hier wuerden normalerweise Events aufgeschluesselt und die
+   entsprechenden Aktionen eingeleitet. *)
+    RETURN FALSE;
+END Event;
+
+PROCEDURE Repaint();
+BEGIN
+(* Normalerweise wuerde hier der Fensterinhalt neu gemalt *)
+END Repaint;
+
+VAR Anz : SHORTINT; (* Hier merken wir uns die Anzahl der Kommandozeilen-
+                       Parameter *)
+    Args : ArgTable; (* Und hier die Parameter *)
+
+BEGIN
+    GetArgs (Anz, Args);
+    (* Holen der Parameter *)
+    XG_Init (Anz, Args, PROC(Repaint), PROC(Event));
+    XG_StartmainLoop();
+END SimpleX.
+\end{verbatim}
+
+Dieses einfache Beispielprogramm bringt lediglich ein Fenster auf den
+Bildschirm, in dem nicht gemalt wird. Die Funktionen {\em Repaint} und
+{\em Event}
+sind leere Funktionen, die jedoch trotzdem vorhanden sein m"ussen. Durch
+den Befehl {\em PROC(Repaint)} wird erreicht, da"s an dieser Stelle nicht die
+Funktion Repaint aufgerufen, sondern nur ihre Addresse eingesetzt wird.
+(Analog f"ur Event.)
+
+
+
+
+\subsection{Ein Gr"o"seres Beispiel}
+\begin{verbatim}
+MODULE GreaterX;
+
+FROM Arguments IMPORT GetArgs, ArgTable;
+
+FROM XGraphic IMPORT XG_Init, XG_StartMainLoop,
+                     XGN_ShowNotice,
+                     XGM_NewMenu, XGM_AddItem, XGM_CreateMenu,
+                     XGD_Clear, XGD_DrawCircle,
+                     XGE_X_Position, XGE_Y_Position,
+                     XGE_Button_L, XGE_Button_R;
+
+VAR cx, cy : INTEGER;
+    Anz : SHORTINT;
+    Args : ArgTable;
+    handle : INTEGER;
+
+PROCEDURE Repaint();
+BEGIN
+    XGD_Clear();
+    XGD_DrawCircle (cx, cy, 10, FALSE, 0);
+    (* Male einen Kreis um den Punkt (cx, cy) mit dem Radius 10 in der Farbe
+       Schwarz (nicht ausgefuellt) *)
+END Repaint;
+
+PROCEDURE Event() : BOOLEAN;
+BEGIN
+    IF XGE_Button_L=1 THEN
+        cx := XGE_X_Position();
+        cy := XGE_Y_Position();
+        RETURN TRUE;
+    END;
+    RETURN FALSE;
+END Event;
+(* Beachte: Nach Beendigung der Event-Funktion wird vom System die
+Repaint-Funktion aufgerufen, sofern dies notwendig ist (RETURN TRUE). *)
+
+
+PROCEDURE Menue (Nummer : INTEGER);
+BEGIN
+    IF (Nummer = 2)
+        XGN_ShowNotice ("Hello, World");
+    END;
+END Menue;
+
+BEGIN
+    GetArgs (Anz, Args);
+    XG_Init (Anz, Args, PROC(Repaint), PROC(Event));
+    handle := XGM_NewMenu ("Testmenue");
+    XGM_AddItem (handle, "Punkt 1");
+    XGM_AddItem (handle, "Hallo!");
+    XGM_CreateMenu (handle, PROC(Menue));
+    XG_StartMainLoop();
+END GreaterX.
+\end{verbatim}
+
+In diesem Beispiel wird zus"atzlich ein Men"u eingef"ugt, das bei Auswahl des
+zweiten Men"u-Punktes eine Nachricht auf den Bildschirm bringt. Au"serdem
+reagiert das Programm auf Mausclicks innerhalb des Malbereichs (der gro"sen
+Fl"ache unterhalb der Men"uzeile), indem es um den Punkt, an dem die linke
+Maustaste gedr"uckt wurde, einen Kreis zeichnet.
+    
+%
+% Kurze Erklaerung zu diesem Beispiel
+%
+% erledigt - Alexander
+
+
+
+
+
+\section{Systemanforderungen}
+
+
+
+
+\subsection{Hardware}
+Ben"otigt wird dieselbe Ausstattung, die auch f"ur Linux erforderlich ist.
+Man braucht also einen PC, der mindestens mit einem 80386SX ausgestattet ist.
+Au"serdem m"ussen 8 MByte RAM und ca. 200 MByte Platz auf der Festplatte
+vorhanden sein.
+Zus"atzlich braucht man eine Maus mit drei Tasten (Mouse-Systems kompatibel),
+%
+% Vielleicht sollten wir noch sagen, dass XFree der Treiber fuer
+% X ist?
+%
+sowie eine SVGA-Grafikkarte mit einem von XFree86 V2.0\footnote[1]{XFree86 ist
+der X-Server f"ur Linux und als solcher sorgt er daf"ur, da"s Programme unter
+X Windows laufen k"onnen} unterst"utzten Chipsatz.
+%
+% im Duden nachsehen ob Grafikkarte mit 1 oder 2 k geschrieben wird.
+%
+Von XFree86 werden zur Zeit unter anderem folgende Chips"atze
+unterst"utzt: S3, Mach8, Mach32, ET4000 (und ET4000W32), Trident 8900, IBM 8514, Genoa. Wenn Sie eine genauere Liste haben wollen, so k"onnen Sie diese von
+folgenden Quellen beziehen:
+\begin{enumerate}
+\item{Viele Buchhandlungen haben das Linux Anwenderhandbuch vorr"atig. Im
+Kapitel zur Konfiguration von XFree86 werden die Unterst"utzten Chips"atze
+aufgelistet.}
+\item{Die Linux-CDs der Fa. SuSE listen auf der R"uckseite der H"ulle ebenfalls
+die Chips"atze auf.}
+\end{enumerate}
+
+
+
+
+\subsection{Software}
+Auf dem PC mu"s Linux in der Kernel Version 0.99pl13 oder h"oher,
+XFree86 ab Version 1.3 (besser w"are Version 3.1x) und der Modula 2
+Compiler MOCKA ab Version 9302 installiert sein.
+
+
+
+
+\section{Installation}
+%
+% Diesen Abschnitt sollten wir in zwei Teile aufteilen. Zunaechst
+% einen Paragraphen, in dem der allgemeine Ablauf der Installation
+% beschrieben wird.
+% Danach dann eine Schritt fuer Schritt anleitung, die dann wie folgt
+% aussehen sollte:
+% 1. Disketten einlegen
+% 2. ...
+% n. Hier unbedingt ja eingeben
+%
+% Hiermit geschehen :-) - Alexander
+
+
+
+\subsection{Allgemeines}
+Die Installation geschieht unter Verwendung der von uns erstellten
+Programmdiskette, die neben dem Compiler und der Bibliothek auch die
+notwendigen Files enth"alt, die vom Shellscript SETUP, das bei der von uns
+verwendeten Slackware-Linux-Distribution enthalten ist, automatisch
+installiert werden kann. Au"serdem ist eine Konfigurations-Datei f"ur
+das Paket MTOOLS auf der Diskette enthalten; diese darf jedoch nur
+installiert werden, wenn Ihr Laufwerk A: ein 5,25\"\/-Laufwerk ist.
+Die n"achsten drei Abschnitte beschreiben die Installation Schritt f"ur
+Schritt in Abh"angigkeit vom bei Ihnen installierten Linux-System. Benutzer
+der Slackware-Distributionen vor Version 1.1.2 benutzen bitte Version A,
+Benutzer neuerer Slackware-Distributionen (hierzu z"ahlen auch diejenigen von
+Ihnen, die Ihr Linux von uns erhalten haben) verwenden bitte Version B. Alle
+anderen m"ussen Version C benutzen.
+
+
+
+
+\subsection{Schritt f"ur Schritt - Version A}
+Um den Compiler und die Bibliothek zu installieren (vorausgesetzt, Sie
+haben Linux mit der Slackware-Distribution in einer Version vor 1.1.2
+installiert), gehen Sie bitte wie folgt vor:
+
+\begin{enumerate}
+  \item{Diskette einlegen}
+  \item{Login als ROOT}
+  \item{Eingabe: setup und RETURN}
+  \item{Auswahl: Y (Neue Software installieren)}
+  \item{Auswahl: 2 (Von Diskette installieren)}
+  \item{Auswahl: 1 (Wenn die Diskette in Laufwerk A: ist, sonst 2 w"ahlen)}
+  \item{Auswahl: 4 (Eine einzelne Diskette installieren)}
+  \item{Auswahl: Y (Nachfrage bei jedem Paket)}
+  \item{Eingabe: RETURN (Um die Installation zu starten)}
+  \item{Eingabe: N oder Y (N, wenn Ihr Laufwerk A: ein 3,5\"\/-Laufwerk ist, Y
+        sonst)}
+  \item{Eingabe: N (Nicht neu konfigurieren)}
+\end{enumerate}
+Nun sind sowohl der MOCKA-Compiler als auch das XGraphic-Paket installiert.
+
+
+
+\subsection{Schritt f"ur Schritt - Version B}
+Um den Compiler und die Bibliothek mit dem Setup-Programm von Slackware 1.1.2
+(das ist die von uns verschickte Version) zu installieren, gehen Sie bitte
+wie folgt vor:
+
+\begin{enumerate}
+  \item{Diskette einlegen}
+  \item{Login als ROOT}
+  \item{Eingabe: setup und RETURN}
+  \item{Auswahl: S und RETURN}
+  \item{Auswahl: 2 und RETURN}
+  \item{Auswahl des Laufwerks}
+  \item{RETURN dr"ucken, um Disketten-Satz auszuw"ahlen}
+  \item{Eingabe: LEERTASTE, dann RETURN}
+  \item{Eingabe: P und dann RETURN}
+  \item{RETURN dr"ucken}
+  \item{RETURN dr"ucken}
+  \item{Nach Abschlu"s der Installation das Setup-Programm beenden}
+\end{enumerate}
+Nun sind sowohl der MOCKA-Compiler als auch das XGraphic-Paket installiert.
+
+
+
+
+\subsection{Schritt f"ur Schritt - Version C}
+
+Wenn Sie nicht "uber das Setup-Programm der Slackware-Distribution verf"ugen
+oder es aus irgendeinem Grund nicht benutzen wollen, so folgen Sie bitte den
+folgenden Anweisungen:
+
+\begin{enumerate}
+   \item{Diskette einlegen}
+   \item{Login als root}
+   \item{Kopieren der Dateien in das tmp-Verzeichnis: mcopy \"\/a:*.tgz\"\/
+/tmp}
+   \item{Entpacken der Tar-Archive: cd /; tar xzf /tmp/mocka.tgz; tar xzf
+/tmp/xgraphic.tgz}
+\end{enumerate}
+Nun sollten der Compiler und die Bibliothek installiert sein.
+
+
+
+
+
+
+
+
+
+
+\section{Definitionsmodul}
+
+\listing{XGraphic.md}
+
+\end{document}

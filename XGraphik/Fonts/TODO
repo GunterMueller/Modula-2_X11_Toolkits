@@ -1,0 +1,13 @@
+
+		TODO List for Library Fonts!!
+
+(New Entries ahould be placed at the beginning of the file!!!)
+
+3. Diese Zugriffsfunktionen implementieren.
+
+2. Ein header file für readafm.c schreiben, d.h. Schnittstelle
+   zum Einlesen aus der Datei und zum Zugriff auf die Internen
+   Strukturen festlegen.
+
+1. Aus readafm.c alle Funktionen entfernen, die nicht zum Einlesen
+   gebraucht werden, sondern die nur tfm erzeugen.

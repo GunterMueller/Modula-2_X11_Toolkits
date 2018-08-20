@@ -1,0 +1,33 @@
+
+
+
+            Installationshinweise fuer XGraphic.
+
+Melden Sie sich wie gewohnt an, und fuehren Sie die folgenden Kommandos
+aus.
+
+1. Ein neues Verzeichnis mit dem Namen XGraphic anlegen.
+2. Die Datei xgraphic.tgz in das neue Verzeichnis XGraphic
+   kopieren und auspacken.
+   LINUX: `tar xvzf xgraphic.tgz`
+   SUN:   `gzip -c -d xgraphic.tgz | tar xpvf -`
+3. Das richtige Makefile installieren.
+   LINUX: `make switchtoLINUX`
+   SUN:   `make switchtoSUN`
+4. Die Library uebersetzen.
+   `make`
+   Eventuell das Testprogramm graftest starten und sehen ob es geht.
+   `./graftest`
+
+Fuer den folgenden Schritt muss man evtl. `root` sein.
+Falls man den mocka Compiler nicht in den "Standard"-Verzeichnissen
+installiert hat, sollte man zuvor noch einen Blick ins makefile werfen
+und den Pfadnamen fuer die Installation richtig setzen.
+
+5. Die Library installieren.
+   `make install`
+
+Ab hier ist es nicht mehr erforderlich `root` zu sein.
+
+6. fertig. Wer will, raeumt noch auf!
+   `make clean`

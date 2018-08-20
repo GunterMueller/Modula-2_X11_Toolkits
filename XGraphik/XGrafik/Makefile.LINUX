@@ -1,0 +1,75 @@
+sourcefiles =	Intern.h Intern_lib.ded XGraphic.def XGraphic.mod\
+		ordner.xbm XGraphic.xbm Draw.c Filebrowser.c\
+		InputIntStr.c Haupt.c Menues.c
+
+objfiles =	Intern_lib.d Intern_lib.r Intern_lib.o XGraphic.d XGraphic.r XGraphic.o
+
+distribfiles =	$(sourcefiles) Makefile* INSTALL graftest.mod XGraphic.tex
+
+allfiles =	$(sourcefiles) $(objfiles) Makefile
+
+mockadir =	/usr/mocka
+debug =		-g -DSCROLLBARS
+
+X11Libs =       -L/usr/openwin/lib -lxview -lolgx -lX11 -lm
+
+X11incl_path =  -I/usr/openwin/share/include
+
+
+# Statisch linken
+# static =	-link /usr/local/mocka/sys/link-static
+static =
+
+graftest:	graftest.o XGraphic.o Intern_lib.o
+	mocka -p graftest $(static)
+
+graftest.o:	graftest.mod XGraphic.d Intern_lib.d
+	mocka -c graftest
+
+XGraphic.d:	XGraphic.def XGraphic.mod Intern_lib.d
+	mocka -s XGraphic
+
+Draw.o:		Draw.c Intern.h
+	gcc  -m32 $(debug) -c Draw.c
+
+Filebrowser.o:	Filebrowser.c Intern.h
+	gcc -m32 $(debug) -c Filebrowser.c
+
+InputIntStr.o:	InputIntStr.c Intern.h
+	gcc -m32 $(debug) -c InputIntStr.c
+
+Menues.o:	Menues.c Intern.h
+	gcc -m32 $(debug) -c Menues.c
+
+Haupt.o:	Haupt.c Intern.h
+	gcc -m32 $(debug) -c Haupt.c
+
+Intern_lib.d:	Intern_lib.def Intern_lib.o
+	mocka -s Intern_lib
+
+XGraphic.o:	Intern_lib.d XGraphic.d XGraphic.mod
+	mocka -c XGraphic
+
+Intern_lib.o:	Draw.o Filebrowser.o InputIntStr.o Haupt.o Menues.o\
+		XGraphic.xbm ordner.linux.xbm
+	ld -m elf_i386  -r -o Intern_lib.o Draw.o Filebrowser.o InputIntStr.o Menues.o Haupt.o
+	mkdir ./m2bin/
+	cp Intern_lib.o ./m2bin/
+
+distrib:	$(distribfiles)
+	tar czf XGraphic.tgz $(distribfiles)
+
+install:	$(objfiles)
+	install -m 0644 $(allfiles) $(mockadir)/lib
+
+switchtoLINUX:
+	cp Makefile.LINUX Makefile
+
+switchtoSUN:
+	cp Makefile.SUN Makefile
+
+switchtoMTC:
+	cp Makefile.MTC Makefile
+
+clean:
+	rm -f *.o *.r *.d *.log *.aux *% *~ *_errors graftest

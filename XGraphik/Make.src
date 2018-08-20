@@ -1,0 +1,11 @@
+ 
+# common definitions for all Makefiles in all subdirectories of this
+# project
+ 
+CC		= gcc
+CCOPT		= -Wall
+DEBUG		= -g
+AR		= ar rus
+RM		= rm -f
+CFLAGS		= $(CCOPT) $(DEBUG) $(SYSDEFINES) $(SYSINCLUDES)
+

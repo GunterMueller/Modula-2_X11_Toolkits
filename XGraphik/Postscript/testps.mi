@@ -1,0 +1,102 @@
+
+MODULE testps;
+
+FROM Fonts	IMPORT	Style_Fett,
+			Style_Normal,
+			Style_Kursiv,
+			Style_FettKursiv,
+			Font_Times,
+			Font_Helvetica,
+			Font_Courier,
+			GetCharSpecs;
+
+
+FROM Postscript	IMPORT	NewFile,
+			CloseFile,
+			SetFont,
+			AddString,
+			NextPage,
+			ImportGraphics,
+			GetBoundingBox;
+
+FROM TextIO	IMPORT	File;
+
+FROM InOut	IMPORT	WriteInt,
+			WriteReal,
+			WriteLn,
+			WriteString;
+
+CONST	lstr	= "äöüßÄÖÜ The !@#$%^&*()-_+=[]{})\quick brown fox jumps over the lazy dog.";
+
+VAR f : File;
+	x1, x2, y1, y2 : REAL;
+	w, h, t : INTEGER;
+	l : CARDINAL;
+ 	size, delta : ARRAY[1..25] OF REAL;
+BEGIN
+	size[1]:=10.0; delta[1] := 720.0;
+	FOR w := 2 TO 25 DO
+		size[w] := size[w-1] * 1.10;
+		delta[w] := delta[w-1] - size[w];
+	END;
+
+	NewFile ("test.ps",  f);
+
+	SetFont (f, Font_Times, Style_Normal, 15.0);
+	AddString (f, 72.0, 720.0, 
+		lstr);
+	SetFont (f, Font_Times, Style_Kursiv, 15.0);
+	AddString (f, 72.0, 700.0,
+		lstr);
+	SetFont (f, Font_Times, Style_Fett, 15.0);
+	AddString (f, 72.0, 680.0,
+		lstr);
+	SetFont (f, Font_Times, Style_FettKursiv, 15.0);
+	AddString (f, 72.0, 660.0, 
+		lstr);
+
+	SetFont (f, Font_Helvetica, Style_Normal, 15.0);
+	AddString (f, 72.0, 620.0, 
+		lstr);
+	SetFont (f, Font_Helvetica, Style_Kursiv, 15.0);
+	AddString (f, 72.0, 600.0, 
+		lstr);
+	SetFont (f, Font_Helvetica, Style_Fett, 15.0);
+	AddString (f, 72.0, 580.0, 
+		lstr);
+	SetFont (f, Font_Helvetica, Style_FettKursiv, 15.0);
+	AddString (f, 72.0, 560.0, 
+		lstr);
+
+	SetFont (f, Font_Courier, Style_Normal, 15.0);
+	AddString (f, 72.0, 520.0, 
+		lstr);
+	SetFont (f, Font_Courier, Style_Kursiv, 15.0);
+	AddString (f, 72.0, 500.0, 
+		lstr);
+	SetFont (f, Font_Courier, Style_Fett, 15.0);
+	AddString (f, 72.0, 480.0, 
+		lstr);
+	SetFont (f, Font_Courier, Style_FettKursiv, 15.0);
+	AddString (f, 72.0, 460.0, 
+		lstr);
+        AddString (f, 72.0, 440.0, "w4edcfvgbyhun");
+
+	ImportGraphics (f, 72.0, 200.0, "test2.ps"); 
+	
+	GetBoundingBox ("test2.ps", x1, y1, x2, y2);
+	WriteReal (x1, 5, 3); WriteReal (y1, 5, 3); WriteLn;
+	WriteReal (x2, 5, 3); WriteReal (y2, 5, 3); WriteLn;
+	WriteLn;
+	GetCharSpecs (Font_Times, Style_Normal, 'M', w, h, t);
+	WriteString ("Zeichen 'M' - Breite: "); WriteInt (w, 5); WriteLn;
+	WriteString ("            - Hoehe : "); WriteInt (h, 5); WriteLn;
+	WriteString ("            - Tiefe : "); WriteInt (t, 5); WriteLn;
+
+	NextPage(f);
+	FOR l:=1 TO 25 DO
+		SetFont (f, Font_Courier, Style_Normal, size[l]);
+		AddString (f, 72.0, delta[l], "A");
+	END;
+	CloseFile (f);
+END testps.

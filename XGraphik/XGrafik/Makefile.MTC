@@ -1,0 +1,91 @@
+# Aenderungen ab hier
+MTCLIBS =	-d/usr/soft/main/lib/mtc/mockalib
+CCINCLUDES = 	-I/usr/soft/main/lib/mtc/mockalib
+MTCOPTIONS =	-w
+MTCLIBRARY =	-L. -L/usr/soft/main/lib -lmtclib
+
+MC =		mtc
+
+#---------------------------------------------------
+
+sourcefiles =	Intern.h Intern_lib.md XGraphic.md XGraphic.mi\
+		ordner.sun.xbm XGraphic.xbm Draw.c Filebrowser.c\
+		InputIntStr.c Haupt.c Menues.c
+
+objfiles =	Intern_lib.d Intern_lib.r Intern_lib.o XGraphic.d XGraphic.r XGraphic.o
+
+distribfiles =  $(sourcefiles) Makefile* INSTALL graftest.mi XGraphic.tex
+
+allfiles =	$(sourcefiles) $(objfiles) Makefile
+
+libraryfiles =	libXGrafik.a
+
+CC =		gcc
+
+debug =		-g
+
+sysdep =	-DSOLARIS -DSCROLLBARS -DSMALLDISPLAY
+
+X11Libs =	-L/usr/openwin/lib -lxview -lolgx -lX11 -lm
+
+X11incl_path =	-I/usr/openwin/share/include
+
+UCBincl_path =	-I/usr/ucbinclude
+
+graftest:	graftest.o $(intern_files) XGraphic.o Intern_lib.o
+	$(CC) -o graftest $(X11Libs) graftest.o Intern_lib.o XGraphic.o $(MTCLIBRARY)
+
+graftest.o:	graftest.mi XGraphic.h Intern_lib.h
+	$(MC)	graftest.mi $(MTCOPTIONS) $(MTCLIBS)
+	$(CC) -c graftest.c $(CCINCLUDES)
+
+Draw.o:		Draw.c Intern.h
+	$(CC) $(debug) $(X11incl_path) -c Draw.c
+
+Filebrowser.o:	Filebrowser.c Intern.h
+	$(CC) $(debug) $(X11incl_path) $(sysdep) -c Filebrowser.c
+
+InputIntStr.o:	InputIntStr.c Intern.h
+	$(CC) $(debug) $(X11incl_path) $(sysdep) -c InputIntStr.c
+
+Menues.o:	Menues.c Intern.h
+	$(CC) $(debug) $(X11incl_path) $(sysdep) -c Menues.c
+
+Haupt.o:	Haupt.c Intern.h
+	$(CC) $(debug) $(X11incl_path) $(sysdep) -c Haupt.c
+
+Intern_lib.h:	Intern_lib.md
+	$(MC)	Intern_lib.md $(MTCLIBS)
+
+XGraphic.h:	XGraphic.md Intern_lib.h
+	$(MC)	XGraphic.md $(MTCLIBS)
+
+XGraphic.o:	Intern_lib.h XGraphic.h XGraphic.mi
+	$(MC)	XGraphic.mi $(MTCOPTIONS) $(MTCLIBS)
+	$(CC)	-c XGraphic.c $(CCINCLUDES)
+
+Intern_lib.o:	Draw.o Filebrowser.o InputIntStr.o Haupt.o Menues.o\
+		XGraphic.xbm ordner.sun.xbm
+	ld -r -o Intern_lib.o Draw.o Filebrowser.o InputIntStr.o Menues.o Haupt.o
+
+distrib:	$(distribfiles)
+	tar cf XGraphic.tar $(distribfiles) && gzip -c XGraphic.tar > XGraphic.tgz && rm XGraphic.tar
+
+install:
+	install -m 0644 Intern_lib.o Intern_lib.r XGraphic.d XGraphic.o \
+	XGraphic.r /usr/local/lib/mocka/lib
+
+switchtoLINUX:
+	cp Makefile.LINUX Makefile
+
+switchtoSUN:
+	cp Makefile.SUN Makefile
+
+switchtoMTC:
+	cp Makefile.MTC Makefile
+
+copy:
+	cp $(allfiles) ../test
+
+clean:
+	rm -f *.o *.r *.d *.log *.aux *% *~ *_errors graftest

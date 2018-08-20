@@ -1,0 +1,175 @@
+IMPLEMENTATION MODULE Fonts;
+(*****************************************************************************)
+(* Modul      : Fonts                                                        *)
+(* Funktion   : Definition von Konstanten und Funktionen zur                 *)
+(*              Generierung von Fontnamen.                                   *)
+(*		Ausgabefunktionen fuer FontFamily und FontStyle.             *)
+(* Autor      : Alexander Schoelling                                         *)
+(* Bemerkungen: ./.                                                          *)
+(*****************************************************************************)
+
+
+FROM Strings	IMPORT	String,
+			StrEq,
+			Assign,
+			Append,
+			pos,
+			Copy,
+			Delete,
+                        compare;
+
+FROM InOut	IMPORT	WriteString,
+			Write,
+			WriteInt,
+			WriteLn;
+
+FROM TextIO	IMPORT	File,
+			OpenInput,
+			GetString,
+			GetChar,
+			GetInt,
+			UndoGetChar,
+			EOF,
+			Close;
+
+FROM Arguments	IMPORT	ArgTable,
+			GetEnv;
+
+
+FROM FontsInterna IMPORT	initFonts,
+				getCharWidth,
+				getCharHeight,
+				getCharDepth;
+
+
+
+
+
+(*****************************************************************************)
+PROCEDURE GetCharSpecs (    Family   : FontFamily;                 (* IN     *)
+			    Style    : FontStyle;                  (* IN     *)
+			    CharCode : CHAR;			   (* IN     *)
+			VAR width    : INTEGER;			   (*    OUT *)
+			VAR height   : INTEGER;                    (*    OUT *)
+			VAR depth    : INTEGER);                   (*    OUT *)
+(*****************************************************************************)
+BEGIN
+	width := getCharWidth (ORD(Family), ORD(Style), CharCode);
+	height := getCharHeight (ORD(Family), ORD(Style), CharCode);
+	depth := getCharDepth (ORD(Family), ORD(Style), CharCode);
+END GetCharSpecs;
+
+
+
+(*****************************************************************************)
+PROCEDURE String2FontFamily (    text : String)                    (* IN     *)
+                                      : FontFamily;                (*  BACK  *)
+(*****************************************************************************)
+BEGIN
+        IF    compare (text, "Times") = 0 THEN
+                RETURN Font_Times;
+        ELSIF compare (text, "Times-Roman") = 0 THEN
+                RETURN Font_Times;
+        ELSIF compare (text, "Helvetica") = 0 THEN
+                RETURN Font_Helvetica;
+        ELSIF compare (text, "Courier") = 0 THEN
+                RETURN Font_Courier;
+        ELSE
+                RETURN Font_None;
+        END; (* IF *)
+END String2FontFamily;
+
+
+(*****************************************************************************)
+PROCEDURE String2FontStyle (    text : String)                     (* IN     *)
+                                     : FontStyle;                  (*  BACK  *)
+(*****************************************************************************)
+BEGIN
+        IF    StrEq(text, "Normal") OR
+              StrEq(text, "Roman") THEN
+                RETURN Style_Normal;
+        ELSIF StrEq(text, "BoldItalic") OR
+              StrEq(text, "BoldItalics") OR
+              StrEq(text, "ItalicBold") OR
+              StrEq(text, "ItalicsBold") THEN
+                RETURN Style_FettKursiv;
+        ELSIF StrEq(text, "Bold") THEN
+                RETURN Style_Fett;
+        ELSIF StrEq(text, "Oblique") OR
+              StrEq(text, "Italic") OR
+              StrEq(text, "Italics") THEN
+                RETURN Style_Kursiv;
+        ELSE
+                RETURN Style_None;
+        END; (* IF *)
+END String2FontStyle;
+
+
+
+(*****************************************************************************)
+PROCEDURE FontFamily2String (    family : FontFamily;              (* IN     *)
+                             VAR name   : String);                 (*    OUT *)
+(*****************************************************************************)
+BEGIN
+        CASE family OF
+          Font_Times    : Assign (name, "Times");
+        | Font_Helvetica: Assign (name, "Helvetica");
+        | Font_Courier  : Assign (name, "Courier");
+        ELSE              Assign (name, "");
+        END; (* CASE *)
+END FontFamily2String;
+
+
+
+(*****************************************************************************)
+PROCEDURE FontStyle2String (    Style : FontStyle;                 (* IN     *)
+                            VAR name   : String);                  (*    OUT *)
+(*****************************************************************************)
+BEGIN
+        CASE Style OF
+          Style_Normal    : Assign (name, "Normal");
+        | Style_Fett      : Assign (name, "Bold");
+        | Style_Kursiv    : Assign (name, "Italic");
+        | Style_FettKursiv: Assign (name, "BoldItalic");
+        ELSE                Assign (name, "");
+        END; (* CASE *)
+END FontStyle2String;
+
+
+
+
+(*****************************************************************************)
+PROCEDURE WriteFont (font	: FontFamily);			   (* IN     *)
+(*****************************************************************************)
+BEGIN
+   CASE font OF
+        Font_Times 	: WriteString("Font_Times");
+      | Font_Helvetica 	: WriteString("Font_Helvetica");
+      | Font_Courier 	: WriteString("Font_Courier");
+      ELSE
+	 WriteString("Modul Fonts Proc WriteFont: font unknown");
+   END; (* case *)
+END WriteFont;
+
+
+
+(*****************************************************************************)
+PROCEDURE WriteStyle (style	: FontStyle);			   (* IN     *)
+(*****************************************************************************)
+BEGIN
+   CASE style OF
+        Style_Normal 	 : WriteString("Style_Normal");
+      | Style_Fett 	 : WriteString("Style_Fett");
+      | Style_Kursiv 	 : WriteString("Style_Kursiv");
+      | Style_FettKursiv : WriteString("Style_FettKursiv");
+      ELSE
+	 WriteString("Modul Fonts Proc WriteStyle: style unknown");
+   END; (* case *)
+END WriteStyle;
+
+
+
+BEGIN
+	initFonts;
+
+END Fonts.

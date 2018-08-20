@@ -1,0 +1,9 @@
+#
+# Make.Linux
+#
+MOCKA		= mocka
+MOCKALIBDIR	= /usr/mocka/lib
+GCCDEFINES	= -D__linux__
+
+#SYSDEFINES      = -DSCROLLBARS
+SYSDEFINES      = 

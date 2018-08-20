@@ -1,0 +1,135 @@
+
+FOREIGN MODULE Intern_lib;
+(*
+** Intern.md
+** -----------
+** Definitionsmodul des XGraphic-Paketes zur Programmierung
+** von XView 3.0 mit Modula-2. (Interner Teil)
+** --------------------------------------------------------
+** Autor:    Alexander Schoelling
+** Datum:    3.1.94
+*)
+
+
+FROM    Arguments       IMPORT  ArgTable;
+FROM    Strings         IMPORT  String;
+FROM    SYSTEM          IMPORT  ADDRESS;
+
+PROCEDURE XG_Init (    AnzahlArgumente : SHORTCARD;          (* IN     *)
+                       Argumente       : ArgTable;           (* IN     *)
+                       CB_Repaint      : PROC;               (* IN     *)
+                       CB_Event        : PROC);              (* IN     *)
+
+PROCEDURE XG_StartMainLoop ();                               (*        *)
+
+PROCEDURE XG_SetTimer (	    IntervalTime : INTEGER;          (* IN     *)
+				callback : PROC);            (* IN     *)
+
+PROCEDURE XGM_NewMenu (    label : ARRAY OF CHAR) : INTEGER; (* IN     *)
+
+PROCEDURE XGM_AppendItem (    mHandle : INTEGER;             (* IN     *)
+                              label   : ARRAY OF CHAR);      (* IN     *)
+
+PROCEDURE XGM_CreateMenu (    mHandle  : INTEGER;            (* IN     *)
+                              callback : PROC);              (* IN     *)
+
+PROCEDURE XGM_SetItemActivity (    Handle : INTEGER;         (* IN     *)
+                                   Nummer : INTEGER;         (* IN     *)
+                                   Status : INTEGER);        (* IN     *)
+
+
+PROCEDURE XGF_SetLeft (    text : ARRAY OF CHAR);            (* IN     *)
+
+PROCEDURE XGF_SetRight (    text : ARRAY OF CHAR);           (* IN     *)
+
+PROCEDURE XGF_SetDefault ();                                 (*        *)
+
+
+PROCEDURE XGN_InputInt (    prompt : ADDRESS;                (* IN     *)
+                            start  : INTEGER;                (* IN     *)
+                            lbound : INTEGER;                (* IN     *)
+                            ubound : INTEGER;                (* IN     *)
+                            ticks  : INTEGER);               (* IN     *)
+
+PROCEDURE XGN_GetLastInteger (VAR Int : INTEGER) : INTEGER;  (*    OUT *)
+
+PROCEDURE XGN_ShowNotice (    Text : ARRAY OF CHAR);         (* IN     *)
+
+PROCEDURE XGN_InputString (    prompt : ARRAY OF CHAR);      (* IN     *)
+
+PROCEDURE XGN_GetLastString (    Str : ADDRESS) : INTEGER;   (*    OUT *)
+
+PROCEDURE XGN_FileSelector (    mask : ADDRESS);             (* IN     *)
+
+PROCEDURE XGN_GetFileName  (    filename : ADDRESS)          (*    OUT *)
+                                                  : INTEGER;
+
+PROCEDURE XGN_YesOrNo (    prompt : ADDRESS) : INTEGER;      (* IN     *)
+                                                  
+
+PROCEDURE XGD_DrawLine (    x1    : INTEGER;                 (* IN     *)
+                            y1    : INTEGER;                 (* IN     *)
+                            x2    : INTEGER;                 (* IN     *)
+                            y2    : INTEGER;                 (* IN     *)
+                            w     : INTEGER;                 (* IN     *)
+                            color : INTEGER);                (* IN     *)
+
+(* Interne Prozedursetzt die Farbe fuer die PROC XGD_DrawTriangle. Nur 
+   solange Fehler im SUN Mocka-Compiler nicht behoben ist *)
+PROCEDURE XGD_SetColor (color : INTEGER);
+
+(* Interne Prozedur, die nur ein gefuelltes Dreieck malt.	*)
+(* Wird fuer XGD_DrawArrowLine gebraucht.			*)
+PROCEDURE XGD_DrawTriangle (	x1, y1,
+				x2, y2,
+				x3, y3 : INTEGER);
+(*				color	: INTEGER); *)
+
+
+PROCEDURE XGD_DrawCircle (    x     : INTEGER;               (* IN     *)
+                              y     : INTEGER;               (* IN     *)
+                              r     : INTEGER;               (* IN     *)
+                              filled: INTEGER;
+                              color : INTEGER);              (* IN     *)
+
+PROCEDURE XGD_DrawString (    x     : INTEGER;               (* IN     *)
+                              y     : INTEGER;               (* IN     *) 
+                              text  : ADDRESS;               (* IN     *)
+                              color : INTEGER);              (* IN     *)
+
+PROCEDURE XGD_BeginPoly (    n : INTEGER);                   (* IN     *)
+
+PROCEDURE XGD_AddPolyPoint (    x : INTEGER;                 (* IN     *)
+                                y : INTEGER);                (* IN     *)
+
+PROCEDURE XGD_DrawPoly (    closed : INTEGER;                (* IN     *)
+                            filled : INTEGER;                (* IN     *)
+                            width  : INTEGER;                (* IN     *)
+                            color  : INTEGER);               (* IN     *)
+
+PROCEDURE XGD_Clear ();                                      (*        *)
+
+PROCEDURE XGD_Flush ();                                      (*        *)
+
+
+PROCEDURE XGE_Button_L () : INTEGER;                         (*        *)
+
+PROCEDURE XGE_Button_M () : INTEGER;                         (*        *)
+
+PROCEDURE XGE_Button_R () : INTEGER;                         (*        *)
+
+PROCEDURE XGE_MouseMove () : INTEGER;                        (*        *)
+
+PROCEDURE XGE_ButtonEvent () : INTEGER;                      (*        *)
+
+PROCEDURE XGE_X_Position () : INTEGER;                       (*        *)
+
+PROCEDURE XGE_Y_Position () : INTEGER;                       (*        *)
+
+PROCEDURE XGE_KeyCode () : CHAR;                             (*        *)
+
+PROCEDURE XGE_KeyPressed () : INTEGER;                       (*        *)
+
+PROCEDURE XG_Sleep (Seconds : INTEGER) : INTEGER;
+
+END Intern_lib.

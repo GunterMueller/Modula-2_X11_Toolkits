@@ -1,0 +1,14 @@
+#
+# Make.SunOS
+#
+UCBINCLUDE	= -I/usr/ucbinclude
+X11INCLUDE	= -I/usr/openwin/share/include
+
+SYSINCLUDES	= $(X11INCLUDE)
+
+#SYSDEFINES	= -DSOLARIS -DSCROLLBARS -DMOCKA
+SYSDEFINES	= -DSOLARIS -DMOCKA
+
+
+MOCKA		= mc
+MOCKALIBDIR	= /usr/soft/main/Mocka/lib

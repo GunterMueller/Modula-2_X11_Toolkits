@@ -1,0 +1,79 @@
+sourcefiles =	Intern.h Intern_lib.md XGraphic.md XGraphic.mi\
+		ordner.sun.xbm XGraphic.xbm Draw.c Filebrowser.c\
+		InputIntStr.c Haupt.c Menues.c
+
+objfiles =	Intern_lib.d Intern_lib.r Intern_lib.o XGraphic.d XGraphic.r XGraphic.o
+
+distribfiles =  $(sourcefiles) Makefile* INSTALL graftest.mi XGraphic.tex
+
+allfiles =	$(sourcefiles) $(objfiles) Makefile
+
+libraryfiles =	libXGrafik.a
+
+CC =		gcc
+
+debug =		-g
+
+sysdep =	-DSOLARIS -DSCROLLBARS -DMOCKA
+
+X11Libs =	-L/usr/openwin/lib -lxview -lolgx -lX11 -lm
+
+X11incl_path =	-I/usr/openwin/share/include
+
+UCBincl_path =	-I/usr/ucbinclude
+
+graftest:	graftest.o XGraphic.o Intern_lib.o
+	mc -p graftest -link /usr/soft/main/lib/mocka/XGrafik/link.X11
+
+graftest.o:	graftest.mi XGraphic.d Intern_lib.d
+	mc -c graftest
+
+Draw.o:		Draw.c Intern.h
+	$(CC) $(debug) $(X11incl_path) -c Draw.c
+
+Filebrowser.o:	Filebrowser.c Intern.h
+	$(CC) $(debug) $(X11incl_path) $(sysdep) -c Filebrowser.c
+
+InputIntStr.o:	InputIntStr.c Intern.h
+	$(CC) $(debug) $(X11incl_path) $(sysdep) -c InputIntStr.c
+
+Menues.o:	Menues.c Intern.h
+	$(CC) $(debug) $(X11incl_path) $(sysdep) -c Menues.c
+
+Haupt.o:	Haupt.c Intern.h
+	$(CC) $(debug) $(X11incl_path) $(sysdep) -c Haupt.c
+
+Intern_lib.d:	Intern_lib.md Intern_lib.o
+	mc -s Intern_lib
+
+XGraphic.d:	XGraphic.md Intern_lib.d
+	mc -s XGraphic
+
+XGraphic.o:	Intern_lib.d XGraphic.d XGraphic.mi
+	mc -c XGraphic
+
+Intern_lib.o:	Draw.o Filebrowser.o InputIntStr.o Haupt.o Menues.o\
+		XGraphic.xbm ordner.sun.xbm
+	ld -r -o Intern_lib.o Draw.o Filebrowser.o InputIntStr.o Menues.o Haupt.o
+
+distrib:	$(distribfiles)
+	tar cf XGraphic.tar $(distribfiles) && gzip -c XGraphic.tar > XGraphic.tgz && rm XGraphic.tar
+
+install:
+	install -m 0644 Intern_lib.o Intern_lib.r XGraphic.d XGraphic.o \
+	XGraphic.r /usr/local/lib/mocka/lib
+
+switchtoLINUX:
+	cp Makefile.LINUX Makefile
+
+switchtoSUN:
+	cp Makefile.SUN Makefile
+
+switchtoMTC:
+	cp Makefile.MTC Makefile
+
+copy:
+	cp $(allfiles) ../test
+
+clean:
+	rm -f *.o *.r *.d *.log *.aux *% *~ *_errors graftest
