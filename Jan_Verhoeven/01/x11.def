@@ -1,0 +1,45 @@
+(* This is the Modula-2 native part of a Foreign Module called x11
+ * 
+ * x11 will support just ONE window to do graphic things from within
+ * Modula-2 and relies on x11.c
+ * 
+ * CopyLeft 2015 Jan Verhoeven, Tilburg
+ *)
+
+FOREIGN MODULE x11;
+
+PROCEDURE	mSleep (n : CARDINAL);
+
+PROCEDURE	setTitle (text : ARRAY OF CHAR);
+
+PROCEDURE	setBgC (colour : CARDINAL);
+
+PROCEDURE	setFgC (colour : CARDINAL);
+
+PROCEDURE	Clear ();
+
+PROCEDURE	Plot (x, y : CARDINAL);
+
+PROCEDURE	printString (x, y : CARDINAL; string : ARRAY OF CHAR);
+
+PROCEDURE	Line (x1, y1, x2, y2 : CARDINAL);
+
+PROCEDURE	Arc (x, y, width, height, arc_start, arc_stop : CARDINAL);
+
+PROCEDURE	Rect (x, y, width, height : CARDINAL);
+
+PROCEDURE	FillArc (x, y, width, height, arc_start, arc_stop : CARDINAL);
+
+PROCEDURE	FillRect (x, y, width, height : CARDINAL);
+
+PROCEDURE	Xinit (W, H : CARDINAL);
+
+(*	
+	Init initializes X11, the variables and opens the window on screen	
+*)
+
+PROCEDURE	NextEvent () : INTEGER;
+
+PROCEDURE	Xclose ();
+
+END x11.
