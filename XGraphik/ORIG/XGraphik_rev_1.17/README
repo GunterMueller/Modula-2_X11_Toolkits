@@ -1,0 +1,23 @@
+Das File XGrafik.tar.gz enthaelt die Graphic-Bilbliothek fuer das 
+Softwarepraktikum. Bitte entpacken Sie es auf die folgende Art und Weise:
+
+# zuerst ein Unterverzeichnis erstellen mit z.B.
+mkdir sopra
+cd sopra
+tar xfvz XGrafik.tar.gz
+
+
+Sie enthalten dann einen Verzeichnisbaum mit vier Makefiles und 
+einem Vereichnis mit den Sourcen der graphic-Bibliothek
+
+-----------------------------------------------------------
+
+Analog zur XGraphic-Bibliothek befindet sich in diesem Verzeichnis
+noch das File Libraries.tar.gz. Dieses enthaelt zusaetzlich noch die
+Librarys "Fonts" und "Postscript". Entpacken Sie deses File auf die
+gleiche Weise wie das File XGrafik.tar.gz.
+Wenn Sie Libraries.tar.gz holen, dann brauchen Sie XGrafik.tar.gz
+nicht mehr, das ist darin enthalten.
+
+
+   Michael Fischer

@@ -1,0 +1,1861 @@
+\documentstyle[german,din-a4,time]{article}
+\parindent0pt
+\parskip0.2\baselineskip
+
+%
+% In der endgueltigen Version den Header auskommentieren!
+%
+%\pagestyle{myheadings}
+%\markright{Installationsanleitung \today\ \thetime}
+
+\newcommand{\taste}[1]{[#1]}
+\newcommand{\prog}[1]{{\bf #1}}
+\newcommand{\eing}[1]{{\tt #1}}
+\newcommand{\datei}[1]{{\tt #1}}
+
+\begin{document}
+
+
+\title{Installationsanleitung für die LINUX-Version PROPRA}
+\author{Michael Fischer}
+\date{April 1994}
+% \date{\today\ \thetime }
+\maketitle
+
+\section{Vorbereitungen für die Installation}
+
+In dieser Anleitung wird die Installation der speziell für das Programmierpraktikum
+im Sommersemester 1994 erstellten LINUX-Distribution beschrieben. Dabei wird als Beispiel
+ein AT-kompatibler PC mit 80486 Prozessor, Super-VGA-Grafikkarte und AT-Bus-Festplatte
+benutzt. Die Festplatte ist vor der Installation vollständig mit MS-DOS belegt und soll
+nach der Installation sowohl LINUX als auch MS-DOS enthalten.
+
+Machen Sie deshalb zuerst ein Backup der MS-DOS-Daten und -Programme,
+die Sie behalten möchten. Dazu
+können Sie entweder einzelne Files auf Diskette kopieren oder den Inhalt der ganzen
+Platte mittels des MS-DOS-Befehls \prog{backup} auf Disketten kopieren.
+Nachdem LINUX installiert ist, können Sie mit dem Programm
+\prog{restore} das Backup wieder auf die Festplatte spielen.
+Weitere nützliche Programme zum Sichern und Wiedereinlesen von Daten sind
+\prog{copy} und \prog{xcopy}.
+
+Halten Sie Ihre orginalen MS-DOS Disketten für eine Neuinstallation von MS-DOS bereit oder
+erstellen Sie eine MS-DOS-Bootdiskette, auf der die Programme \prog{fdisk},
+\prog{format} und \prog{restore} enthalten sind. Diese Diskette benötigen Sie,
+um nach dem Backup von Diskette zu booten
+und von dort aus Ihre Festplatte neu zu partitionieren. 
+
+Halten Sie außerdem {\it zwei formatierte Disketten}
+im Format Ihres Bootlaufwerkes (das ist das Laufwerk A:) bereit.
+
+Bei der Installation werden Sie die folgenden, später genauer beschriebenen Schritte
+durchführen:
+\begin{itemize}
+\item Löschen aller alten Partitionen Ihrer Festplatte. (Mit dem DOS-Programm \prog{fdisk})
+\item Anlegen einer neuen, kleinen MS-DOS Partition. (Mit dem DOS-Programm \prog{fdisk})
+\item Anlegen einer neuen SWAP Partition\footnote{
+In dieser Partition lagert das Betriebssystem Teile des Hauptspeichers aus,
+die gerade nicht benötigt werden.} für LINUX. (Mit dem LINUX-Programm \prog{fdisk})
+\item Anlegen einer neuen, großen LINUX Partition. (Mit dem LINUX-Programm \prog{fdisk})
+\item Installation von LINUX auf der LINUX Partition.
+\item Erstellen von Boot-Disketten, um mit diesen Disketten LINUX zu starten.
+\end{itemize}
+
+Bevor Sie mit der Installation beginnen noch eine Anmerkung. Es wird zwar immer
+vom Industrie-Standard PC gesprochen, doch in der Realität ist jeder PC anders.
+Mal ist es die Grafik-Karte, dann der Plattenkontroller, der Bus oder das BIOS
+durch das sich ein Rechner vom Anderen unterscheidet. Wenn man dann noch sieht
+wie viel verschiedene Software es gibt (MS-DOS, Novell DOS, OS-2, ...) und
+wie unterschiedlich diese auf den Rechnern installiert sein kann (C:, D:, ...),
+ist klar, daß wir nicht alle möglichen Konfigurationen berücksichtigen können.
+
+Sollte Ihnen während der Installation eine Abweichung zu unserer Anleitung
+auffallen, so kann dies natürlich an der unterschiedlichen Konfiguration der
+Rechner liegen. Sie sollten dann selbstständig herausfinden, wie Sie weiter
+vorgehen müssen oder bei uns anrufen (Tel. 02331/9874368). Es sollte aber 
+anhand dieser Anleitung immer klar sein, wie Sie im Prinzip weiter vorgehen müssen.
+
+
+\section{Einrichten der DOS-Partition}
+\subsection{Unter DOS die Festplatte partitionieren}
+
+Nachdem Sie Ihre Daten und Programme gesichert haben, booten Sie den Rechner von Diskette
+und starten Sie das Programm \prog{fdisk}. Es erscheint dann ein
+Menü\footnote{ In diesem Text werden die Begriffe Menü und Bildschirmmaske synonym
+benutzt.},
+das ähnlich dem Folgenden
+aussieht. (In diesem Beispiel wird MS-DOS 5.0 zur Demonstration genutzt, in anderen Versionen
+von MS-DOS kann \prog{fdisk} geringfügig anders aussehen, hat aber die gleiche Funktionalität.)
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{center}
+MS-DOS Version 5.00 \\
+Festplatten-Installationsprogramm \\
+(C) Copyright Microsoft Corp. 1983 - 1991 \\
+FDISK-Optionen \\
+\end{center}
+
+\begin{flushleft}
+Aktuelle Festplatte: 1\\
+
+Eine der folgenden Optionen auswählen:\\
+
+1. Erstellen einer DOS-Partition oder eines logischen DOS-Laufwerkes\\
+2. Festlegen der aktiven Partition\\
+3. Löschen einer Partition oder eines logischen DOS-Laufwerkes\\
+4. Anzeigen der Partitionierungsdaten\\
+
+Optionsnummer eingeben: [1]\\
+
+\taste{Esc} drücken, um das FDISK-Programm zu verlassen\\
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+\subsubsection{Löschen der DOS-Partition}
+
+Wählen Sie nun \eing{3}, um die vorhandene Partition von der Platte zu entfernen. Dabei gehen
+natürlich alle Daten verloren (was nicht mehr schlimm ist, da Sie ja vorher ein backup
+gemacht haben). Nach Auswahl von Punkt 3 erscheint folgendes Menü:
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{center}
+Löschen einer Partition oder eines logischen DOS-Laufwerkes\\
+\end{center}
+\begin{flushleft}
+Aktuelle Festplatte: 1\\
+
+Eine der folgenden Optionen auswählen:\\
+
+1. Löschen einer primären DOS-Partition\\
+2. Löschen einer erweiterten DOS-Partition\\
+3. Löschen logischer DOS-Laufwerke in der erweiterten DOS-Partition\\
+4. Nicht-DOS-Partition löschen
+
+Optionsnummer eingeben: [1]\\
+
+\taste{Esc}drücken, um zu den FDISK-Optionen zurückzukehren\\
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+In unserem Beispiel haben wir einen PC mit 200-MB-Platte. Die gesamte Platte ist mit
+einer DOS-Partition belegt. Sollten Sie mehrere Partitionen auf Ihrer Platte haben,
+so müssen Sie u.U.\ erst die logischen DOS-Laufwerke, dann die erweiterten 
+DOS-Partitionen und dann erst die primäre DOS-Partition löschen. \prog{fdisk}
+gibt Ihnen dabei aber Hilfestellung, indem es bei dem Versuch ein primäre
+DOS-Parition zu löschen während noch erweiterte Partitionen vorhanden sind,
+eine entsprechende Meldung ausgibt. In unserem Fall zeigt \prog{fdisk} uns den
+folgendem Bildschirm, nachdem aus dem Menü
+der Punkt \eing{1} gewählt wurde:
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{center}
+Löschen einer primären DOS-Partition\\
+\end{center}
+\begin{flushleft}
+Aktuelle Festplatte: 1\\
+\end{flushleft}
+\begin{tabular}{rrrrrrr}
+Partition & Status &   Typ   & Bezeichnung & MByte & System & benutzt \\
+   C: 1   &    A   & PRI DOS &  URZ-FEU-1  &  202  & FAT16  &    100%
+\end{tabular}
+\begin{flushleft}
+Speicherplatz auf Festplatte insgesamt:  202 MByte\\
+
+WARNUNG! Alle Daten in der primären DOS-Partition gehen verloren.\\
+Welche primäre Partition möchten Sie löschen....? [1]\\
+
+\taste{Esc} drücken, um zu den FDISK-Optionen zurückzukehren\\
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+Geben Sie nun \eing{1} ein, um die Partition zu löschen. Danach wird Ihnen folgende Frage
+gestellt:
+
+\begin{verbatim}
+Datenträgerbezeichnung eingeben......?[URZ-FEU-1  ]
+\end{verbatim}
+
+Geben Sie hier nun den Namen Ihrer Festplatte ein, wie er in dem Feld {\it Bezeichnung} von
+\prog{fdisk} aufgelistet wurde. (Es kann sein, daß für Ihre Festplatte kein Name vergeben
+wurde. In diesem Fall bleibt das Feld {\it Bezeichnung} leer, und Sie müssen auch nichts
+eingeben. Geben Sie in diesem Fall einfach \taste{Return} ein). 
+
+\begin{verbatim}
+Sind Sie sicher (J/N).............?[J]
+\end{verbatim}
+
+An dieser Stelle müssen Sie nochmal mit \eing{J} bestätigen, daß Sie die Partition auch wirklich
+löschen wollen.
+
+Nachdem Sie dies getan haben, zeigt \prog{fdisk} an, daß es die Partition gelöscht hat:
+
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{center}
+Löschen einer primären DOS-Partition\\
+\end{center}
+\begin{flushleft}
+Aktuelle Festplatte: 1\\
+Speicherplatz auf Festplatte insgesamt:  202 MByte\\
+\medskip
+Primäre DOS-Partition gelöscht\\
+\medskip
+\taste{Esc} drücken, um zu den FDISK-Optionen zurückzukehren\\
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+Nachdem Sie nun alle Partitionen Ihrer Festplatte gelöscht
+haben, ist diese leer und kann neu partitioniert werden.
+Dazu betätigen Sie die Taste \taste{Esc}, um in das Hauptmenü von \prog{fdisk}
+zurückzukehren.
+
+\subsubsection{Einrichten der DOS-Partition}
+
+Wählen Sie nun Punkt \eing{1} im Hauptmenü (Erstellen einer DOS-Partition oder eines 
+logischen DOS-Laufwerkes). Es erscheint das folgende Menü auf dem Bildschirm:
+
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{center}
+DOS-Partition oder logisches DOS-Laufwerk erstellen\\
+\end{center}
+\begin{flushleft}
+Aktuelle Festplatte: 1\\
+\medskip
+Eine der folgenden Optionen auswählen:\\
+\medskip
+1. Erstellen einer primären DOS-Partition\\
+2. Erstellen einer erweiterten DOS-Partition\\
+3. Erstellen logischer DOS-Laufwerke in der erweiterten DOS-Partition\\
+\medskip
+Optionsnummer eingeben: [1]\\
+\medskip
+\taste{Esc} drücken, um zu den FDISK-Optionen zurückzukehren\\
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+
+Um wieder eine DOS-Partition auf der Platte anzulegen, wählen Sie Punkt \eing{1}
+aus. Es erscheint dann folgendes Menü:
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{center}
+Erstellen einer primären DOS-Partition\\
+\end{center}
+\begin{flushleft}
+Aktuelle Festplatte: 1\\
+\medskip
+Soll der maximal verfügbare Speicherplatz für die primäre DOS-Partition\\
+verwendet und diese Partition aktiviert werden (J/N)....? [N] \\
+\medskip
+\taste{Esc} drücken, um zu den FDISK-Optionen zurückzukehren\\
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+
+Diese Frage müssen Sie unbedingt mit \eing{N} wie nein beantworten, sonst können 
+Sie gleich neu anfangen! Sobald Sie geantwortet haben, erscheint folgendes Bild:
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{center}
+Erstellen einer primären DOS-Partition\\
+\end{center}
+\begin{flushleft}
+Aktuelle Festplatte: 1 \\
+\medskip
+Speicherplatz auf der Festplatte insgesamt: 202 MByte \\
+Maximal verfügbarer Speicherplatz für die Partition: 202 MByte (100) \\
+\medskip
+Partitionsgröße in MByte oder Prozentsatz des verfügbaren Platzes angeben, \\
+um primäre DOS-Partition zu erstellen...........................: [    ] \\
+\medskip
+keine Partition definiert \\
+\medskip
+\taste{Esc} drücken, um zu den FDISK-Optionen zurückzukehren \\
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+Hier geben Sie nun an, wieviel Platz (in Prozent) Sie für die DOS-Partition reservieren
+möchten. Wir haben uns entschieden 5 Prozent unserer Plattenkapazität für DOS
+zu reservieren. Wieviel Sie für DOS reservieren
+möchten, hängt von der Größe Ihrer Festplatte ab. Bedenken Sie, daß Sie insgesamt 
+mindestens 80 MB für das gesamte LINUX-System übrig lassen müssen. Etwas mehr Platz 
+schadet nicht. Geben Sie LINUX lieber 20 MB zu viel, als 5 zu wenig. Schließlich 
+wollen Sie später auch {\em alle} selbst geschriebenen Programme auf der Platte halten.
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{center}
+Erstellen einer primären DOS-Partition \\
+\end{center}
+\medskip
+\begin{flushleft}
+Aktuelle Festplatte: 1 \\
+\medskip
+\end{flushleft}
+\begin{tabular}{rrrrrrr}
+Partition & Status &   Typ   & Bezeichnung & MByte & System   & benutzt \\
+   C: 1   &        & PRI DOS &             &   10  & ungültig &       5
+\end{tabular}
+\medskip
+\begin{flushleft}
+Primäre DOS-Partition erstellt \\
+\medskip
+\taste{Esc} drücken, um zu den FDISK-Optionen zurückzukehren
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+\subsubsection{Aktivieren der DOS-Partition}
+
+Als letzten Schritt müssen Sie jetzt nur noch die neu angelegte DOS-Partition aktivieren.
+Sonst kann DOS später nicht von dieser Partition gebootet werden.
+Dazu drücken Sie die Taste \taste{Esc} und wählen aus dem Hauptmenü den Punkt:
+
+\medskip
+\begin{verbatim}
+2. Festlegen der aktiven Partition
+\end{verbatim}
+\medskip
+
+Es erscheint danach das folgende Bild:
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{center}
+Festlegen der aktiven Partition \\
+\end{center}
+\medskip
+\begin{flushleft}
+Aktuelle Festplatte: 1\\
+\end{flushleft}
+\medskip
+\begin{tabular}{rrrrrrr}
+Partition & Status &   Typ   & Bezeichnung & MByte & System   & benutzt \\
+   C: 1   &        & PRI DOS &             &   10  & ungültig &       5
+\end{tabular}
+\medskip
+\begin{flushleft}
+Speicherplatz auf Festplatte insgesamt: 202 MByte \\
+\medskip
+Geben Sie die Nummer der zu aktivierenden Partition ein..........: [1] \\
+\medskip
+\taste{Esc} drücken, um zu den FDISK-Optionen zurückzukehren \\
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+Nach der Auswahl von \eing{1} erscheint folgende Bestätigung auf dem Schirm:
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{center}
+Festlegen der aktiven Partition \\
+\end{center}
+\begin{flushleft}
+Aktuelle Festplatte: 1 \\
+\end{flushleft}
+\medskip
+\begin{tabular}{rrrrrrr}
+Partition & Status &   Typ   & Bezeichnung & MByte & System   & benutzt \\
+   C: 1   &    A   & PRI DOS &             &   10  & ungültig &       5
+\end{tabular}
+\medskip
+\begin{flushleft}
+Speicherplatz auf Festplatte insgesamt: 202 MByte \\
+\medskip
+Partition 1 aktiviert \\
+\medskip
+\taste{Esc} drücken, um zu den FDISK-Optionen zurückzukehren \\
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+An dieser Stelle müssen Sie zweimal \taste{Esc} eingeben. Das Erste, um in 
+das Hauptmenü von \prog{fdisk} zurückzukehren, das Zweite um \prog{fdisk} zu verlassen.
+
+\begin{center}
+\fbox{
+\begin{minipage}{13cm}
+\begin{flushleft}
+Das System wird jetzt neu gestartet. \\
+\medskip
+Legen Sie eine MS-DOS-Systemdiskette in Laufwerk A: ein. \\
+Wenn bereit, eine beliebige Taste drücken . . . \\
+\end{flushleft}
+\end{minipage}
+}
+\end{center}
+
+Zu diesem Zeitpunkt ist auf der Platte eine leere DOS-Partition eingerichtet. Um
+Ihre Daten wieder aufspielen zu können, müssen Sie die Partition erst wieder mit dem
+Programm \prog{format} formatieren. Wenn Sie von der Platte booten wollen,
+vergessen Sie beim formatieren die Option \eing{/s}.
+Dazu können Sie jetzt die DOS-Bootdiskette einlegen, um von dort aus
+\eing{format c: /s} aufzurufen und danach mit \prog{restore} Ihr Backup wieder aufzuspielen.
+Sie können jedoch auch gleich die LINUX Bootdiskette einlegen und mit der Installation
+von LINUX fortfahren. LINUX benötigt kein DOS, um zu arbeiten.
+
+\section{Installation von LINUX}
+\subsection{Anmerkungen}
+
+Speicherbedarf: die spezielle LINUX-Version, die Sie von uns bekommen haben, benötigt
+ungefähr 60MB an reinen Daten und Programmen. Dazu kommen noch ungefähr 16MB an sogenanntem
+Swap-Space. Sie müssen sich also darüber im Klaren sein, ungefähr 80 MB Ihres Plattenplatzes
+für das LINUX-System zur Verfügung zu stellen! Dazu kommt der Platz, den
+Ihre eigenen Dateien und Programme belegen werden.
+
+Legen Sie außerdem schon jetzt zwei formatierte
+Disketten für Ihr Bootlaufwerk bereit. Auf diese Disketten wird am Ende der Installation
+der Linuxkern aufgespielt. Wenn Sie später LINUX benutzen wollen, müssen Sie den Rechner
+mit einer dieser Disketten booten. Die zweite Diskette wird nur für eine Sicherheitskopie der Ersten
+benötigt.
+
+\subsection{Start eines kleinen LINUX für die Installation}
+Legen Sie die LINUX Bootdiskette in das Laufwerk A: ein. Wir gehen hier davon aus, daß das
+Bootlaufwerk (A:) ein 3~1/2 Zoll Laufwerk ist. Wenn Ihr Diskettenlaufwerk A: ein 5~1/4~Zoll
+Laufwerk ist und Ihr Laufwerk B: ein 3~1/2 Zoll Laufwerk, dann legen Sie alle Disketten bis auf
+die Bootdiskette in Laufwerk B:. Sie bekommen dann von uns eine spezielle Bootdiskette
+für Ihr Laufwerk A:.
+
+Starten Sie nun den Bootvorgang durch betätigen von \taste{Reset} oder der
+Tastenkombination \taste{Ctrl~-~Alt~-~Del} oder durch Einschalten Ihres Rechners. 
+Es wird nun ein kleines Linuxsystem in den Rechner geladen und ausgeführt. Dies dauert etwas.
+Danach erscheint auf dem Bildschirm folgende Meldung:
+
+\begin{verbatim}
+Please remove the boot Kernel disk from your floppy drive,
+insert a disk to be loaded into the ramdisk, and press
+[enter] to continue.
+\end{verbatim}
+
+Besitzer deren Laufwerk A: ein 3~1/2~Zoll Laufwerk ist, legen nun die Diskette {\bf color144}
+in das Laufwerk A: ein. Diejenigen mit einem 3~1/2~Zoll Laufwerk als Drive B: legen die
+Diskette {\bf color144} in das Laufwerk B: !
+
+Drücken Sie nun die Taste \taste{Return}, bzw. die Taste \taste{Enter}.
+
+Ein minimales ROOT-Filesystem wird nun in die Ramdisk geladen. Dies dauert wieder eine Weile,
+in der einige Meldungen ausgegeben werden. Als letzte Meldung erscheint die Aufforderung sich
+anzumelden. Tun Sie dies, indem Sie \eing{root} als Login eingeben. (Als Login wird die
+Eingabe des Benutzernames bezeichnet. In diesem Fall geben Sie \eing{root} als Namen ein. Dies
+ist ein auf jedem UNIX-System voreingestellter Benutzer, der sog. Super-User. Dieser Benutzer
+hat alle Rechte und darf jede nur mögliche Veränderung am System vornehmen.)
+
+Danach erscheint am linken Rand der Eingabezeile das Zeichen 
+\begin{verbatim}
+#
+\end{verbatim}
+
+Dieses zeigt an, daß das Installations-LINUX bereit ist, Eingaben von Ihnen entgegenzunehmen.
+Bevor Sie Kommandos eingeben können, müssen Sie jedoch erst das System auf Ihre deutsche
+Tastatur umstellen. LINUX geht ansonsten davon aus, daß Sie eine amerikanische Tastatur
+besitzen. 
+
+\subsection{Einstellen der deutschen Tastatur}
+Zu diesem Zweck geben Sie folgende Befehle ein, wobei Sie beachten müssen, daß
+LINUX noch von einer amerikanischen Tastatur ausgeht, Sie also anstatt \eing{/} 
+ein \eing{-}, anstatt \eing{-} ein \eing{ß}, anstatt \eing{<} ein \eing{;} und 
+anstatt \eing{|} ein \eing{'} (Hochkomma) eingeben müssen. Außerdem sind die
+Buchstaben \eing{y} und \eing{z} vertauscht.
+
+\begin{verbatim}
+# cd /usr/lib/kbd/keytables
+# gzip -d <gr-lat1.map.gz | loadkeys
+\end{verbatim}
+
+Danach hat LINUX die deutsche Tastatur erkannt. 
+
+\subsection{Partitionieren der Festplatte unter LINUX}
+Die Installation beginnt mit der Einteilung Ihrer Festplatte in verschiedene Partitionen.
+Zu diesem Zweck müssen Sie das LINUX-Programm \prog{fdisk} aufrufen. Sie tun dies, indem Sie
+einfach \eing{fdisk} eingeben. Es erscheint folgender Text als Antwort:
+
+\begin{verbatim}
+# fdisk
+Using /dev/hda as default device!
+ 
+Command (m for help):
+\end{verbatim}
+
+Das \prog{fdisk} Programm von LINUX hat im Prinzip die gleiche 
+Funktionalität wie das von DOS.
+Geben Sie nun den Buchstaben \eing{p}\footnote{für print} gefolgt von \taste{Enter} ein.
+Sie sehen die DOS-Partition,
+die Sie mit dem DOS-Programm \prog{fdisk} angelegt haben: 
+(Diese Angabe nennen wir {\em Patitionsinfo}).
+
+\begin{verbatim}
+Command (m for help): p
+ 
+Disk /dev/hda: 16 heads, 38 sectors, 683 cylinders
+Units = cylinders of 608 * 512 bytes
+ 
+   Device Boot  Begin   Start     End  Blocks   Id  System
+/dev/hda1   *       1       1      34   10317    1  DOS 12-bit FAT
+\end{verbatim}
+
+Die Angabe erfolgt hier in Blocks, d.h.\ unsere 10 MB große DOS-Partition besteht
+aus 10317 Blocks.
+Wir wollen nun zwei weitere Partitionen für LINUX anlegen,
+und zwar eine sogennante SWAP-Partition,
+in die LINUX nicht benötigte Teile seines Hauptspeichers ablegen kann,
+und eine Partition in der das Filesystem
+abgelegt ist. LINUX wird in dieses Filesystem alle Dateien schreiben,
+mit denen Sie später arbeiten werden. 
+
+\subsubsection{Einrichten der SWAP-Partition}
+Wir beginnen mit der Einrichtung der SWAP-Partition. Zu diesem Zweck geben Sie im Programm 
+\prog{fdisk}\footnote{Das Programm läuft ja immer noch.}
+die folgenden Befehle ein\footnote{Die Tasten, die Sie drücken müssen, haben wir
+durch unterstreichen im Bild gekennzeichnet.}:
+
+\begin{verbatim}
+Command (m for help): n
+                      -
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+-
+Partition number (1-4): 2
+                        -
+First cylinder (35-683): 35
+                         --
+Last cylinder or +size or +sizeM or +sizeK (35-683): +16M
+                                                     ----
+\end{verbatim}
+
+Sie haben nun nacheinander die Befehle \eing{n} (für new partition), 
+\eing{2} (für zweite Partition), \eing{35} (für den ersten freien Zylinder) 
+und \eing{+16M} (für 16 Megabyte Größe) eingeben. Bedenken Sie, daß
+der erste freie Zylinder bei Ihrer Platte wahrscheinlich nicht der 35. ist, sondern der
+nächste freie Zylinder nach der in {\em Partitionsinfo} in der Spalte End angezeigten Angabe!
+Nur in unserem Fall (10 MB DOS-Partition) ist es Zylinder 35.
+Die Größe der SWAP-Partition sollte 16 Megabyte nicht unterschreiten. Sonst können Sie
+einige Programme, die viel Hauptspeicher brauchen, evtl. nicht starten.
+
+Sie können sich die bisher eingestellten Partitionen jetzt anschauen,
+indem sie nochmal \eing{p} eingeben:
+
+\begin{verbatim}
+Command (m for help): p
+                      -
+Disk /dev/hda: 16 heads, 38 sectors, 683 cylinders
+Units = cylinders of 608 * 512 bytes
+ 
+   Device Boot  Begin   Start     End  Blocks   Id  System
+/dev/hda1   *       1       1      34   10317    1  DOS 12-bit FAT
+/dev/hda2          35      35      88   16416   83  Linux native
+\end{verbatim}
+
+Wie Sie sehen, haben Sie eine weitere Partition angelegt. Diese wird jedoch noch nicht als
+SWAP-Partition erkannt!
+
+Um aus dieser allgemeinen LINUX-Partition eine SWAP-Partition zu machen, müssen Sie den
+Id-Code noch ändern. Geben Sie dazu den
+Buchstaben \eing{t} gefolgt von \taste{Enter} ein, danach geben Sie 
+\eing{2} ein, danach \eing{L} gefolgt von einem \taste{Enter} und zuletzt geben 
+Sie dann \eing{82} \taste{Enter} (dies ist der Code für die Swap-Partition von 
+LINUX) ein. Es entsteht folgender Dialog:
+
+\begin{verbatim}
+Command (m for help): t
+                      -
+Partition number (1-4): 2
+                        -
+Hex code (type L to list codes): L
+                                 -
+ 
+ 0  Empty            8  AIX             75  PC/IX           b8  BSDI swap      
+ 1  DOS 12-bit FAT   9  AIX bootable    80  Old MINIX       c7  Syrinx         
+ 2  XENIX root       a  OPUS            81  Linux/MINIX     db  CP/M           
+ 3  XENIX usr       40  Venix 80286     82  Linux swap      e1  DOS access     
+ 4  DOS 16-bit <32M 51  Novell?         83  Linux native    e3  DOS R/O        
+ 5  Extended        52  Microport       93  Amoeba          f2  DOS secondary  
+ 6  DOS 16-bit >=32 63  GNU HURD        94  Amoeba BBT      ff  BBT            
+ 7  OS/2 HPFS       64  Novell          b7  BSDI fs        
+Hex code (type L to list codes): 82
+                                 --
+Changed system type of partition 2 to 82 (Linux swap)
+Command (m for help): p
+                      -
+Disk /dev/hda: 16 heads, 38 sectors, 683 cylinders
+Units = cylinders of 608 * 512 bytes
+ 
+   Device Boot  Begin   Start     End  Blocks   Id  System
+/dev/hda1   *       1       1      34   10317    1  DOS 12-bit FAT
+/dev/hda2          35      35      88   16416   82  Linux swap
+\end{verbatim}
+
+Sie haben jetzt den Partitions-Typ von {\it Linux native} auf {\it Linux swap}
+geändert. Das Kommando \eing{L} hat alle möglichen Typen aufgelistet. Und mit 
+dem Kommando \eing{p} haben Sie nochmal überprüft, ob die Eingabe richtig 
+ausgeführt wurde.
+
+\subsubsection{Einrichten der LINUX-Partition}
+Als letzten Schritt müssen wir jetzt noch
+die Partition einrichten, in der sich das Dateisystem von LINUX befinden 
+soll. Der folgende Dialog sollte nun genügen, um diese Schritte zu verstehen:
+
+\begin{verbatim}
+Command (m for help): n
+                      -
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+-
+Partition number (1-4): 3
+                        -
+First cylinder (89-683): 89
+                         --
+Last cylinder or +size or +sizeM or +sizeK (89-683): 683
+                                                     ---
+Command (m for help): p
+                      -
+Disk /dev/hda: 16 heads, 38 sectors, 683 cylinders
+Units = cylinders of 608 * 512 bytes
+ 
+   Device Boot  Begin   Start     End  Blocks   Id  System
+/dev/hda1   *       1       1      34   10317    1  DOS 12-bit FAT
+/dev/hda2          35      35      88   16416   82  Linux swap
+/dev/hda3          89      89     683  180880   83  Linux native
+
+\end{verbatim}
+
+Bis auf zwei kleine Abweichungen lief das Einrichten dieser 3.~Partition 
+genauso ab wie das der SWAP-Partition. Zum Einen wurde bei der Eingabe: 
+{\it Partition number (1-4):} eine \eing{3} für die 3.~Partition eingegeben. 
+Und zweitens wurde die Aufforderung {\it Last cylinder or +size or
++sizeM or +sizeK (89-683):} mit der Nummer des letzten Zylinders bestätigt 
+(\eing{683}). D.h. der Rest der Platte wurde für das LINUX-Dateisystem zur
+Verfügung gestellt. Auch Sie sollten die gesamte verbliebene Kapazität
+Ihrer Festplatte für die LINUX-Partition benutzen. Eine weiter Eingabe von
+\eing{p} hat Ihnen noch einmal bestätigt, daß alles richtig gemacht wurde.
+
+\subsubsection{Speichern der Partitionsdaten}
+Bis hierher haben Sie alle Änderungen nur im RAM Ihres Rechners vorgenommen. 
+Die Daten sind noch nicht auf die Festplatte zurückgeschrieben worden. 
+Wenn Sie alles noch einmal eingeben wollen, können
+Sie nun \eing{q} eingeben. Damit verlassen Sie das \prog{fdisk} Programm. 
+Alle Änderungen wären dann verloren, bzw. es wäre nichts zerstört worden. 
+Um die Daten jedoch dauerhaft auf die Festplatte zu schreiben, müssen Sie 
+ein \eing{w} gefolgt von einem \taste{Return} eingeben.  Der folgende Dialog
+zeigt, was dann passiert:
+
+\begin{verbatim}
+Command (m for help):w
+                     -
+The partition table has been altered !
+Calling BLKRRPART ioctl () to re-read
+partition table
+
+Syncing disks
+Reboot your system to ensure partition
+table is updated
+\end{verbatim}
+
+
+Das \prog{fdisk} Programm hat nun die neue Partitionstabelle auf die 
+Platte geschrieben. Damit LINUX auch ganz sicher mit diesen neuen Information 
+arbeitet, sollte der Rechner nun neu gebootet werden. Tun Sie dies, indem Sie 
+die Bootdiskette wieder einlegen und durch Eingabe von {\tt reboot} den Rechner 
+neu starten!
+
+Folgen Sie den am Anfang erteilten Hinweisen, bis sich das System wieder mit der
+Aufforderung meldet, \eing{root} einzugeben. Geben Sie erneut \eing{root} ein, 
+damit das System folgende Ausgabe macht:
+
+\begin{verbatim}
+#
+\end{verbatim} 
+
+\section{Die Installation von LINUX}
+Nachdem Sie im vorherigen Abschnitt erfolgreich die Partitionen für LINUX 
+angelegt haben, können Sie nun damit beginnen, LINUX selbst auf der Festplatte 
+zu installieren. Starten Sie dazu das Programm \prog{setup}, indem Sie 
+\eing{setup} eingeben. Es wird folgendes Bild auf dem Schirm erscheinen:
+\begin{verbatim}
+   +--------------- Slackware Linux Setup (version FD-1.1.2) ---------------+
+   |                                                                        |
+   |  Welcome to Slackware Linux Setup.                                     |
+   |                                                                        |
+   |  Hint: If you have trouble using the arrow keys on your keyboard,      |
+   |  you can use '+', '-', and TAB instead. Which option would you like?   |
+   | +--------------------------------------------------------------------+ |
+   | |     HELP       Read the Slackware Setup HELP file                  | |
+   | |     KEYMAP     Remap your keyboard                                 | |
+   | |     QUICK      Choose QUICK or VERBOSE install mode [now: VERBOSE] | |
+   | |     MAKE TAGS  Tagfile customization program                       | |
+   | |     SOURCE     Select source media                                 | |
+   | |     TARGET     Select target directory [now: /]                    | |
+   | |     DISK SETS  Decide which disk sets you wish to install          | |
+   | |     INSTALL    Install selected disk sets                          | |
+   | |     CONFIGURE  Reconfigure your Linux system                       | |
+   | |     PKGTOOL    Install or remove packages with Pkgtool             | |
+   | |     EXIT       Exit Slackware Linux Setup                          | |
+   | +--------------------------------------------------------------------+ |
+   +------------------------------------------------------------------------+
+   |                         <  OK  >      <Cancel>                         |
+   +------------------------------------------------------------------------+
+\end{verbatim}
+
+Sie können nun mittels der Tasten \taste{Pfeil rauf}, \taste{Pfeil runter}
+oder der Tasten \taste{+} und \taste{-} auswählen, in welches Untermenü Sie 
+gehen wollen.  Als erstes wählen Sie aus dem Hauptmenü die Option KEYMAP 
+durch mehrmaliges Betätigen der Taste \taste{Pfeil runter} (oder der 
+Taste \taste{+}) aus.  Nach Bestätigung durch \taste{Return} erscheint 
+folgendes Bild:
+
+\begin{verbatim}
+      +--------------------- KEYBOARD MAP SELECTION ---------------------+
+      |                                                                  |
+      |  You may select one of the following keyboard maps.              |
+      |  You may use the UP/DOWN arrow keys to scroll through            |
+      |  the whole list of choices.                                      |
+      |                                                                  |
+      | +-------------^(-)---------------------------------------------+ |
+      | |             /usr/lib/kbd/keytables/fi-lat1.map.gz            | |
+      | |             /usr/lib/kbd/keytables/fi.map.gz                 | |
+      | |             /usr/lib/kbd/keytables/fr-lat1.map.gz            | |
+      | |             /usr/lib/kbd/keytables/fr.map.gz                 | |
+      | |             /usr/lib/kbd/keytables/gr-lat1.map.gz            | |
+      | |             /usr/lib/kbd/keytables/gr.map.gz                 | |
+      | |             /usr/lib/kbd/keytables/no-lat1.map.gz            | |
+      | |             /usr/lib/kbd/keytables/no-lt1+.map.gz            | |
+      | |             /usr/lib/kbd/keytables/no.map.gz                 | |
+      | +-------------v(+)---------------------------------------------+ |
+      +------------------------------------------------------------------+
+      |                      <  OK  >      <Cancel>                      |
+      +------------------------------------------------------------------+
+\end{verbatim}
+
+Wählen Sie mittels der Pfeiltasten die Zeile :
+
+\begin{verbatim}
+  /usr/lib/kbd/keytables/gr-lat1.map.gz     
+\end{verbatim}
+
+aus. Nachdem Sie diese mit \taste{Return} bestätigt haben erscheint die folgende Maske:
+
+\begin{verbatim}
+     +-------------------------- KEYBOARD TEST ---------------------------+
+     |                                                                    |
+     |  OK, the new map is now installed. You may now test it by typing   |
+     |  anything you want. To quit testing the keyboard, enter [y] on a   |
+     |  line by itself to accept the map and go on, or [n] on a line by   |
+     |  itself to reject the current keyboard map and select a new one.   |
+     | +----------------------------------------------------------------+ |
+     | | _                                                              | |
+     | +----------------------------------------------------------------+ |
+     |                                                                    |
+     +--------------------------------------------------------------------+
+     |                       <  OK  >      <Cancel>                       |
+     +--------------------------------------------------------------------+
+\end{verbatim}
+
+jetzt können Sie die eingestellte Tastaturbelegung testen, indem Sie auf die 
+\taste{y}-Taste\footnote{Der Unterschied zwischen einer amerikanischen
+Tastatur und einer Deutschen zeigt sich u.A. daran, daß y und z vertauscht
+sind.} drücken. Wenn in der Eingabezeile ein \eing{y} erscheint, war die Einrichtung
+erfolgreich, und Sie können diese Maske mit \eing{OK} bestätigen.
+Danach erscheint die folgende Maske:
+
+\begin{verbatim}
+                    +------------- CONTINUE? --------------+
+                    |  We're done with the KEYMAP          |
+                    |  section, would you like to set up   |
+                    |  your swap space ?                   |
+                    +--------------------------------------+
+                    |         < Yes >      <  No  >        |
+                    +--------------------------------------+
+\end{verbatim}
+
+Dieses Bild erscheint, da Sie bei der Partitionierung eine SWAP-Partition
+eingerichtet haben. Sollte Ihr Rechner weniger als 8 Megabyte Speicher besitzen,
+so müssen Sie diese Frage {\em unbedingt} mit \eing{Yes} beantworten, da 
+sonst das \prog{setup}-Programm nicht richtig arbeiten kann. Mit 8 Megabyte oder 
+mehr sollten Sie aber trotzdem mit \eing{Yes} antworten, da das \prog{setup}-Programm 
+einige Einstellungen vornimmt, die im nachhinein nicht so einfach durchzuführen 
+sind. Bestätigen Sie also mit \eing{Yes} und es erscheint folgendes Bild:
+
+\begin{verbatim}
+     +--------------------------------------------------------------------+
+     |                                                                    |
+     |  Slackware Setup has detected a swap partition:                    |
+     |                                                                    |
+     |     Device Boot  Begin   Start     End  Blocks   Id  System        |
+     |  /dev/hda2          35      35      88   16416   82  Linux swap    |
+     |                                                                    |
+     | Do you wish to install this as your swap partition ?               |
+     |                                                                    |
+     +--------------------------------------------------------------------+
+     |                       < Yes >      < No >                          |
+     +--------------------------------------------------------------------+
+\end{verbatim}
+
+LINUX hat automatisch erkannt, daß es eine SWAP-Partition gibt, welche Partition 
+es ist und wie groß diese ist. Sie werden nun aufgefordert, diese zu installieren. 
+Bestätigen Sie also mit \eing{Yes}.
+
+Jetzt erscheint eine Warnung, daß Sie die folgende Installation nur machen sollen,
+wenn Ihre SWAP-Partition frisch eingerichtet ist. Wenn Sie nach unserer Anleitung
+vorgegangen sind, ist das bei Ihnen der Fall. Deshalb bestätigen Sie das folgende 
+Bild mit \eing{Ok}!
+
+\begin{verbatim}
+            +---------------------- MKSWAP WARNING ----------------------+
+            |  IMPORTANT NOTE: If you have already made any of your swap |
+            |  partitions active (using the swapon command), then you    |
+            |  should not allowed Setup to use mkswap on your swap       |
+            |  partitions, because it may corrupt memory pages that are  |
+            |  currently swapped out. Instead, you will have to make sure|
+            |  that your swap partitions have been prepared (with mkswap)|
+            |  before they will work. You might want to do this to any   |
+            |  inactive swap partitions before you reboot                |
+            |                                                            |
+            +------------------------------------------------------------+
+            |                          < Ok >                            |
+            +------------------------------------------------------------+
+\end{verbatim}
+
+Das \prog{setup}-Programm möchte die SWAP-Partition nun für das System vorbereiten. Dies ist
+notwendig damit LINUX weiß, wieviel swap space für das System verfügbar ist. Bestätigen
+Sie die folgenden zwei Auf\/forderungen mit \eing{Yes} und alles wird gut!
+
+\begin{verbatim}
+                    +----------  USE MKSWAP ------------+
+                    | Do you want Setup to use mkswap   |
+                    | on your swap partition ?          |
+                    |                                   |
+                    +-----------------------------------+
+                    |       < Yes >     <  No  >        |
+                    +-----------------------------------+
+\end{verbatim}
+
+Die SWAP-Partition ist nun vorbereitet und kann jetzt dem System hinzugefügt werden.
+Lassen Sie \prog{setup} dies tun, indem Sie die nächste Frage mit \eing{Yes} beantworten!
+
+\begin{verbatim}
+                    +-------  ACTIVATE SWAP SPACE --------+
+                    | If you have not already activated   |
+                    | your swap partitions with "swapon", |
+                    | you should do so at this time.      |
+                    | Activate swap partition with swapon?|
+                    |                                     |
+                    +-------------------------------------+
+                    |       < Yes >     <  No  >          |
+                    +-------------------------------------+
+\end{verbatim}
+
+Als nächstes kommt die Bestätigung, daß die SWAP-Partition auch wirklich
+eingefügt wurde. Zusätzlich wird diese Information noch in der Datei \datei{/etc/fstab}
+eingetragen, so daß beim nächsten Start von LINUX die SWAP-Partition sofort zur
+Verfügung steht. Bestätigen Sie das nächste Bild mit \eing{Ok}!
+
+\begin{verbatim}
+                    +-------  SWAP SPACE CONFIGURED -------+
+                    | Your swap space has been configured  |
+                    | This information will be added to    |
+                    | your /etc/fstab                      |
+                    |                                      |
+                    | /dev/hda2   swap   swap   defaults   |
+                    |                                      |
+                    +--------------------------------------+
+                    |                < Ok >                |
+                    +--------------------------------------+
+\end{verbatim}
+
+Sie haben nun alle Schritte gemacht und können mit der Installation fortfahren.
+Bestätigen Sie deshalb die folgende Eingabe mit \eing{Yes}.
+
+\begin{verbatim}
+                    +------ CONTINUE WITH INSTALLATION ------+
+                    | Now that you`ve set up your swap       |
+                    | space, you may continue on with        |
+                    | the installation. Otherwise, you`ll be |
+                    | returned to the main menu. Would       |
+                    | you like to continue the installation, |
+                    | selecting your source media ?          |
+                    |                                        |
+                    +----------------------------------------+
+                    |          < Yes >      <  No  >         |
+                    +----------------------------------------+
+\end{verbatim}
+
+Als nächstes müssen Sie eingeben, von welchem Medium Sie LINUX installieren
+möchten.
+Es erscheint folgendes Bild:
+
+
+\begin{verbatim}
+       +------------------- SOURCE MEDIA SELECTION --------------------+
+       |                                                               |
+       |  Where do you plan to install Slackware Linux from?           |
+       |                                                               |
+       | +-----------------------------------------------------------+ |
+       | |          1  Install from a hard drive partition           | |
+       | |          2  Install from floppy disks                     | |
+       | |          3  Install via NFS                               | |
+       | |          4  Install from a pre-mounted directory          | |
+       | |          5  Install from CD-ROM                           | |
+       | +-----------------------------------------------------------+ |
+       +---------------------------------------------------------------+
+       |                    <  OK  >      <Cancel>                     |
+       +---------------------------------------------------------------+
+\end{verbatim}
+
+Sie haben LINUX von uns auf Disketten bekommen. Deshalb wählen Sie nun mittels der
+\taste{Pfeil}-Tasten die 2. Zeile : ,,2  Install from floppy disks'' aus. Es erscheint
+folgendes Bild:
+
+
+\begin{verbatim}
+      +---------------------- SELECT FLOPPY DRIVE ----------------------+
+      |                                                                 |
+      |  The base Slackware series (A) can be installed from 1.2M       |
+      |  or 1.44M media. Most of the other disks will not fit on        |
+      |  1.2M media, but can be downloaded to your hard drive and       |
+      |  installed from there later.                                    |
+      |                                                                 |
+      |  Which drive do you want to install from?                       |
+      | +-------------------------------------------------------------+ |
+      | |                /dev/fd0H1440  1.44M drive a:                | |
+      | |                /dev/fd1H1440  1.44M drive b:                | |
+      | |                /dev/fd0h1200  1.2M drive a:                 | |
+      | |                /dev/fd1h1200  1.2M drive b:                 | |
+      | +-------------------------------------------------------------+ |
+      |                                                                 |
+      +-----------------------------------------------------------------+
+      |                     <  OK  >      <Cancel>                      |
+      +-----------------------------------------------------------------+
+\end{verbatim}
+
+Nun müssen Sie auswählen, von welchem Laufwerk Sie LINUX installieren möchten.
+In der Regel werden Sie ihr 3 1/2 Zoll Laufwerk benutzen. Dieses hat eine
+ Kapazität von 1440 KB (1.44M drive) pro Diskette. In diesem Fall wählen Sie 
+entweder die erste oder zweite Zeile, mittels der Pfeiltasten, je nachdem ob ihr
+3 1/2 Zoll Laufwerk Drive A: oder B: ist. Sollten Sie 
+von einem 5 1/4 Zoll Laufwerk (1.2M drive) installieren wollen, so wählen Sie entweder die
+3. oder 4. Zeile. Für die entliehenen Rechner der Fernuni gilt 3 1/2 Zoll Laufwerk
+als Laufwerk B:, daraus folgt: Wählen Sie die zweite Zeile.
+Nach der Auswahl erscheint folgende Maske:
+
+\begin{verbatim}
+                    +------------- CONTINUE? --------------+
+                    | Would you like to go on to the TARGET|
+                    | section and configure your Linux     |
+                    | partitions ?                         |
+                    +--------------------------------------+
+                    |         < Yes >      <  No  >        |
+                    +--------------------------------------+
+\end{verbatim}
+
+An dieser Stelle fragt das \prog{setup}-Programm Sie, ob Sie mit der
+Vorbereitung Ihrer Festplatte weitermachen wollen. 
+Antworten Sie durch drücken der Taste \taste{Return}. Dadurch haben sie die
+Default-Antwort \eing{Yes} ausgewählt.
+
+\begin{verbatim}
+      +----------------- Using this partition for Linux -------------------+
+      |                                                                    |
+      |    Device Boot  Begin   Start     End  Blocks   Id  System         |
+      | /dev/hda3          89      89     683  180880   83  Linux native   |
+      |                                                                    |
+      +--------------------------------------------------------------------+
+      |              < Yes >                    <  No  >                   |
+      +--------------------------------------------------------------------+
+\end{verbatim}
+
+LINUX hat automatisch ,,seine'' Partition gefunden und bietet sie Ihnen als Ziel
+für die Installation an. Geben Sie einfach \taste{Return} ein. 
+
+\begin{verbatim}
+          +----------------- CHOOSE LINUX FILESYSTEM -------------------+
+          | There are two filesystem types that are used for Linux.     |
+          | These are the xiafs file system, and the secondextended     |
+          | filesystem (ext2). Ext2 seems to be the current standard    |
+          | Xiafs hasn't really been changed in quite some time. Ext2   |
+          | has one really nice feature that xiafs doesn't have: as     |
+          | an ext2 partition is unmounted, a clean bit is written to   |
+          | it. When the machine is rebooted, checking is skipped for   |
+          | any partitions that have the clean bit on them. Xiafs may   |
+          | be a better choice for machines with low memory, however    |
+          | so it's still supported. What filesystem do you plan to use |
+          | on your root partition (/dev/hda3), ext2fs or xiafs ?       |
+          +-------------------------------------------------------------+
+          |         ext2       Linux second extended filesystem         |
+          |         xiafs      Linux Xiafs                              |
+          +-------------------------------------------------------------+
+          |               <Ok>            <Cancel>                      |
+          +-------------------------------------------------------------+
+\end{verbatim}
+
+An dieser Stelle werden Sie aufgefordert den Typ des Filesystems auszuwählen
+den Sie benutzen wollen. Nach Erscheinen dieses Bildes ist in der Auswahl schon
+\eing{ext2} voreingestellt. Dieses sollten Sie auch benutzen. Geben Sie deshalb einfach
+\taste{Return} ein um diese Wahl zu bestätigen.
+
+\begin{verbatim}
+          +----------------- FORMAT PARTITION -------------------+
+          | If this partition has not been formatted, you should |
+          | format it. NOTE: This will erase all data on it. If  |
+          | you are trying to upgrade an existing Linux partition|
+          | you should use setup from your hard drive, not from  |
+          | the boot/root disk. (The setup supplied on the hard  |
+          | drive and the boot/root disk differ) Would you like  |
+          | to format this partition ?                           |
+          |                                                      |
+          |    Format     Quick format with no bad block checking|
+          |    Check      Slow format that checks for bad blocks |
+          |    No         No, do not format this partition       |
+          +------------------------------------------------------+
+          |               <Ok>            <Cancel>               |
+          +------------------------------------------------------+
+\end{verbatim}
+
+An dieser Stelle wird die Partition mit einem Filesystem beschrieben. Wählen Sie
+mit den \taste{Pfeil}-Tasten die Option \eing{Check}
+und geben Sie dann \taste{Return} ein. Die 
+LINUX-Partition wird sodann auf Fehler überprüft und mit einem Filesystem beschrieben.
+
+\begin{verbatim}
+              +------------- FORMATTING --------------+
+              | Formatting /dev/hda3                  |
+              | Size in 1 K blocks: 175712            |
+              | Filesystem type: ext2                 |
+              +---------------------------------------+
+\end{verbatim}
+
+Mit dieser Meldung zeigt Ihnen das Installationsprogramm an, daß es die Partition
+bearbeitet.
+
+\begin{verbatim}
+         +-------------- DOS ANS OS/2 PARTITION SETUP -------------+
+         | The following DOS FAT or OS/2 HPFS partition were found:|
+         | /dev/hda1  *   1   1    51   15485     1  DOS 12-Bit FAT|
+         | Would you like to make some of these partitions visible |
+         | from Linux ?                                            |
+         +---------------------------------------------------------+
+         |                 <Yes>              <No>                 |
+         +---------------------------------------------------------+
+\end{verbatim}
+
+An dieser Stelle werden Sie gefragt, ob sie Ihre DOS-Partition auch von LINUX aus
+ansprechen wollen. Dies ist praktisch für den Filetransfer zwischen DOS und LINUX.
+Deshalb beantworten Sie die Frage mit \eing{Yes}.
+
+\begin{verbatim}
+         +------------------- CHOOSE PARTITION --------------------+
+         | These DOS or OS/2 partitions are available to mount:    |
+         | /dev/hda1  *   1   1    51   15485     1  DOS 12-Bit FAT|
+         | Please enter the partition you want to access from Linux|
+         | or type [q] to quit adding new partitions:              |
+         | +-----------------------------------------------------+ |
+         | | /dev/hda1                                           | |
+         | +-----------------------------------------------------+ |
+         |                                                         |
+         +---------------------------------------------------------+
+         |             <Ok>              <Cancel>                  |
+         +---------------------------------------------------------+
+\end{verbatim}
+
+Hier müssen Sie eingeben, welche DOS-Partition Sie von LINUX aus ansprechen möchten.
+In unserem Beispiel haben wir nur die einzige Partition \datei{/dev/hda1}.
+Wenn Sie mehrere DOS-Partitionen angelegt haben, dann müssen Sie jede Partition
+einzeln in das LINUX-Filesystem einbauen.
+Geben Sie diesen Namen in das Eingabefeld ein, so wie es das Beispiel\footnote{
+Die Eingabe wurde im Bild diesmal {\em nicht} unterstrichen.} oben zeigt.
+
+\begin{verbatim}
+         +------------------- SELECT MOUNT POINT --------------------+
+         | Now this new partition must be mounted somewhere in your  |
+         | directory tree. Please enter the directory under which you|
+         | would like to put it. For instance, you might want to     |
+         | reply /dosc, /dosd or something like that.                |
+         | Where would you like to mount /dev/hda1 ?                 |
+         | +-------------------------------------------------------+ |
+         | | /dosc                                                 | |
+         | +-------------------------------------------------------+ |
+         |                                                           |
+         +-----------------------------------------------------------+
+         |               <Ok>              <Cancel>                  |
+         +-----------------------------------------------------------+
+\end{verbatim}
+
+Wenn Sie auf Ihre DOS-Partition von LINUX zugreifen, geschieht dies indem 
+Sie einen Pfadnamen zu dieser DOS-Partition angeben. Diesen Namen können 
+Sie frei wählen. Wir haben uns für den Namen \datei{/dosc} entschieden.
+Dieses steht für DOS-Partition Laufwerk C: .
+
+
+\begin{verbatim}
+         +---------- CURRENT DOS/HPFS PARTITION STATUS ------------+
+         | DOS partition added to /etc/fstab :                     |
+         | /dev/hda1          /dosc       msdos     defaults       |
+         |                                                         |
+         +---------------------------------------------------------+
+         |                       <Ok>                              |
+         +---------------------------------------------------------+
+\end{verbatim}
+
+In diesem Fenster werden Sie nur darüber informiert, daß das 
+\prog{setup}-Programm Ihre Angaben nun gespeichert hat. Geben Sie 
+einfach \taste{Return} ein, damit es weitergeht.
+
+\begin{verbatim}
+         +------------------- CHOOSE PARTITION --------------------+
+         | These DOS or OS/2 partitions are available to mount:    |
+         | /dev/hda1  *   1   1    51   15485     1  DOS 12-Bit FAT|
+         | Please enter the partition you want to access from Linux|
+         | or type [q] to quit adding new partitions:              |
+         | +-----------------------------------------------------+ |
+         | | q                                                   | |
+         | +-----------------------------------------------------+ |
+         |                                                         |
+         +---------------------------------------------------------+
+         |             <Ok>              <Cancel>                  |
+         +---------------------------------------------------------+
+\end{verbatim}
+
+Es kommt nochmal das Eingabefeld ,,CHOOSE PARTITION''. Geben Sie jetzt 
+ein \eing{q} ein, um die Eingabe zu beenden. Falls Sie noch weitere 
+Partitionen auf weiteren Platten haben, können Sie diese jetzt angeben.
+
+Es geht jetzt weiter mit der Installation der Disketten.
+
+\begin{verbatim}
+                    +------------- CONTINUE? --------------+
+                    |  Now that you've set up your source  |
+                    |  location, would you like to go on   |
+                    |  to the DISK SETS section and        |
+                    |  decide which disk sets you wish to  |
+                    |  install?                            |
+                    +--------------------------------------+
+                    |         < Yes >      <  No  >        |
+                    +--------------------------------------+
+\end{verbatim}
+
+Sie werden gefragt, welche Disketten Sie installieren möchten.
+Geben Sie \taste{Return} ein und es erscheint folgendes Bild:
+
+
+\begin{verbatim}
+  +--------------------------- SERIES SELECTION ----------------------------+
+  |                                                                         |
+  |  Use the spacebar to select the disk sets you wish to install.          |
+  |  You can use the UP/DOWN arrows to see all the possible choices.        |
+  |  Press the ENTER key when you are finished. If you need to              |
+  |  install a disk set that is not listed here, check the box for          |
+  |  custom additional disk sets.                                           |
+  |                                                                         |
+  | +---------------------------------------------------------------------+ |
+  | |    [ ] CUS  Also prompt for CUSTOM disk sets                        | |
+  | |    [ ] A    Base Linux system                                       | |
+  | |    [ ] AP   Various Applications that do not need X                 | |
+  | |    [ ] D    Program Development (C, C++, Lisp, Perl, etc.)          | |
+  | |    [ ] E    GNU Emacs                                               | |
+  | |    [ ] F    FAQ lists, HOWTO documentation                          | |
+  | |    [ ] I    Info files readable with info or Emacs                  | |
+  | +--------v(+)---------------------------------------------------------+ |
+  +-------------------------------------------------------------------------+
+  |                         <  OK  >      <Cancel>                          |
+  +-------------------------------------------------------------------------+
+\end{verbatim}
+
+In dieser Maske wählen Sie nun die Disketten aus, die Sie installieren
+wollen. Die folgende Liste gibt an, welche Disketten Sie durch Betätigen der
+Taste \taste{Leerzeichen} auswählen müssen:
+
+\begin{verbatim}
+  | |    [X] CUS  Also prompt for CUSTOM disk sets                        | |
+  | |    [X] A    Base Linux system                                       | |
+  | |    [X] AP   Various Applications that do not need X                 | |
+  | |    [X] D    Program Development (C, C++, Lisp, Perl, etc.)          | |
+  | |    [ ] E    GNU Emacs                                               | |
+  | |    [ ] F    FAQ lists, HOWTO documentation                          | |
+  | |    [ ] I    Info files readable with info or Emacs                  | |
+  | |    [ ] IV   InterViews Development + Doc and Idraw Apps for X       | |
+  | |    [ ] N    Networking (TCP/IP, UUCP, Mail, News)                   | |
+  | |    [ ] OI   ObjectBuilder for X                                     | |
+  | |    [ ] OOP  Object Oriented Programming (GNU Smalltalk 1.1.1)       | |
+  | |    [ ] Q    Replacement Linux kernels with special drivers          | |
+  | |    [ ] T    TeX                                                     | |
+  | |    [ ] TCL  Tcl/Tk/TclX, Tcl language, and Tk toolkit for X         | |
+  | |    [X] X    Base XFree-86 2.0 X Window System                       | |
+  | |    [X] XAP  X Applications                                          | |
+  | |    [X] XD   XFree-86 2.0 X11 Program Development System             | |
+  | |    [X] XV   XView 3.2 release 5. (OpenLook Window Manager, apps)    | |
+  | |    [ ] Y    Games (that do not require X)                           | |
+\end{verbatim}
+
+(In unserer Distribution sind nur diese Disketten und zwei Disketten 
+\eing{feu1} und \eing{feu2} enthalten. Sollten Sie LINUX von einem anderen 
+Distributor beziehen, sind mindestens diese Disketten auszuwählen. Nachträglich 
+{\em müssen} dann noch die Disketten \eing{feu1} und \eing{feu2} installiert werden.)
+
+Nachdem Sie Ihre Auswahl gemacht und mit \eing{Ok} bestätigt haben, erscheint
+das folgende Bild.
+  
+\begin{verbatim}
+            +----------------- CUSTOM DISK SETS ------------------+
+            |                                                     |
+            |  Please enter the names (such as X, Y, Z) of        |
+            |  the custom disk sets that you would also           |
+            |  like to install. Please do not re-enter the        |
+            |  names of sets you have previously selected.        |
+            |                                                     |
+            | +-------------------------------------------------+ |
+            | |feu                                              | |
+            | +-------------------------------------------------+ |
+            +-----------------------------------------------------+
+            |               <  OK  >      <Cancel>                |
+            +-----------------------------------------------------+
+\end{verbatim}
+
+Geben Sie hier den Namen der FernUni-Zusatzdisketten \eing{feu}
+ein.
+
+\begin{verbatim}
+     +---------------------- SELECT PROMPTING MODE -----------------------+
+     |                                                                    |
+     |  Now you must select which type of prompting you would like to     |
+     |  use while installing your software packages. If you're not        |
+     |  sure which mode to use, read the help file.                       |
+     |                                                                    |
+     |  Which type of prompting would you like to use?                    |
+     | +----------------------------------------------------------------+ |
+     | |           Normal  Use the default tagfiles                     | |
+     | |           Custom  Use custom tagfiles                          | |
+     | |           None    Use no tagfiles - install everything         | |
+     | |           HELP    Read the prompt mode help file               | |
+     | +----------------------------------------------------------------+ |
+     +--------------------------------------------------------------------+
+     |                       <  OK  >      <Cancel>                       |
+     +--------------------------------------------------------------------+
+\end{verbatim}
+
+An dieser Stelle werden Sie gefragt, mit welcher Methode die weitere Installation
+durchgeführt werden soll. Geben Sie hier einfach \taste{Return} ein, so daß die 
+normale Methode durchgeführt wird.
+
+
+So, jetzt geht es los! Sie werden aufgefordert, die Diskette \eing{a1} in das Laufwerk
+einzulegen. Tun Sie dies und drücken Sie die \taste{Return}-Taste. Das
+Installationsprogramm beginnt nun, alle Files, die sich auf der Diskette befinden,
+zu installieren.
+Nachdem dies geschehen ist, erscheint folgendes Bild:
+
+\begin{verbatim}
+               +----------------- INSERT DISK ------------------+
+               |  Please insert disk a1 and press ENTER to      |
+               |  continue.                                     |
+               | +--------------------------------------------+ |
+               | |  Continue  Continue with the installation  | |
+               | |  Skip      Skip the current disk series    | |
+               | |  Quit      Abort the installation process  | |
+               | +--------------------------------------------+ |
+               +------------------------------------------------+
+               |             <  OK  >      <Cancel>             |
+               +------------------------------------------------+
+\end{verbatim}
+
+In dem folgenden Fenster zeigt das Programm an, welche Diskette Sie jeweils 
+einlegen müssen.  Sie werden nacheinander aufgefordert, die weiteren Disketten 
+in das Laufwerk einzulegen. Tun Sie dies und bestätigen Sie jede Diskette 
+mit \taste{Return}.
+
+\begin{verbatim}
+               +----------------- INSERT DISK ------------------+
+               |  Please insert disk a2 and press ENTER to      |
+               |  Please insert disk x1 and press ENTER to      |
+               |  Please insert disk x2 and press ENTER to      |
+               |  Please insert disk x3 and press ENTER to      |
+               |  Please insert disk x4 and press ENTER to      |
+               |  Please insert disk ap1 and press ENTER to     |
+               |  Please insert disk d1 and press ENTER to      |
+               |  Please insert disk d3 and press ENTER to      |
+               |  Please insert disk xap1 and press ENTER to    |
+               |  Please insert disk xd1 and press ENTER to     |
+               |  Please insert disk xv1 and press ENTER to     |
+               |  Please insert disk xv2 and press ENTER to     |
+               |  Please insert disk feu1 and press ENTER to    |
+               |  Please insert disk feu2 and press ENTER to    |
+               |  continue.                                     |
+               | +--------------------------------------------+ |
+               | |  Continue  Continue with the installation  | |
+               | |  Skip      Skip the current disk series    | |
+               | |  Quit      Abort the installation process  | |
+               | +--------------------------------------------+ |
+               +------------------------------------------------+
+               |             <  OK  >      <Cancel>             |
+               +------------------------------------------------+
+\end{verbatim}
+
+Nachdem Sie dies getan haben, müssen Sie noch einige Konfigurationen vornehmen. Das
+folgende Bild weist Sie darauf hin.
+
+\begin{verbatim}
+          +------------------ EXTRA CONFIGURATION -------------------+
+          |  If you wish, you may now go through the options to      |
+          |  reconfigure your hardware, make a bootdisk, and         |
+          |  install LILO, and run any other system scripts that     |
+          |  have been installed for you, such as the one to         |
+          |  configure your timezone, or set up your default baud    |
+          |  rate. If you've installed a new kernel image, you       |
+          |  should definately go through these steps again.         |
+          |  Otherwise, it's up to you. Reconfigure your system?     |
+          +----------------------------------------------------------+
+          |                   < Yes >      <  No  >                  |
+          +----------------------------------------------------------+
+\end{verbatim}
+
+Diese Maske fragt Sie nun, ob Sie ein paar weitere Einstellungen vornehmen wollen.
+Betätigen Sie einfach mit \taste{Return}:
+
+\begin{verbatim}
+          +-------------------- MAKE BOOT DISK? ---------------------+
+          |  It is HIGHLY recommended that you make a standard boot  |
+          |  disk for your Linux system at this time. Such a disk    |
+          |  can be very handy if LILO of a kernel is ever           |
+          |  improperly installed. Since the boot disk will contain  |
+          |  a kernel that is independent of LILO and the kernel on  |
+          |  your hard drive, you'll still be able to use it to      |
+          |  boot your system no matter what you do to LILO or your  |
+          |  hard drive kernel. Would you like to make a standard    |
+          |  boot disk?                                              |
+          |                                                          |
+          +----------------------------------------------------------+
+          |                   < Yes >      <  No  >                  |
+          +----------------------------------------------------------+
+\end{verbatim}
+
+Hier wird die Bootdiskette erstellt, die Sie dazu befähigt, das nun auf der
+Festplatte befindliche LINUX auch zu benutzen. Legen Sie nun eine 
+{\em formatierte} Diskette (High Density) in Ihr Bootlaufwerk und betätigen 
+Sie durch \taste{Enter} bzw. \taste{Return}:
+
+\begin{verbatim}
+         +-------------------- BOOT DISK CREATION --------------------+
+         |                                                            |
+         |  Now put a formatted floppy in your boot drive.            |
+         |  This will be made into your Linux boot disk. Use this to  |
+         |  boot Linux until LILO has been configured to boot from    |
+         |  the hard drive.                                           |
+         |                                                            |
+         |  Any data on the target disk will be destroyed.            |
+         |                                                            |
+         |  YES creates the disk, NO aborts.                          |
+         |                                                            |
+         +------------------------------------------------------------+
+         |                    < Yes >      <  No  >                   |
+         +------------------------------------------------------------+
+\end{verbatim}
+
+Nochmalige Bestätigung: \taste{Return} drücken!
+
+\begin{verbatim}
+   +------------------------- MODEM CONFIGURATION -------------------------+
+   |                                                                       |
+   |  This part of the configuration process will create a link in /dev    |
+   |  from your callout device (cua0, cua1, cua2, cua3) to /dev/modem.     |
+   |  You can change this link later if you put your modem on a different  |
+   |  port.                                                                |
+   |                                                                       |
+   |  Would you like to set up your modem?                                 |
+   |                                                                       |
+   +-----------------------------------------------------------------------+
+   |                         < Yes >      <  No  >                         |
+   +-----------------------------------------------------------------------+
+\end{verbatim}
+
+An dieser Stelle werden Sie gefragt, ob Sie ein Modem benutzen wollen. Betätigen Sie
+\taste{Return} für \eing{Yes}.
+
+\begin{verbatim}
+          +----------------- SELECT CALLOUT DEVICE ------------------+
+          |  Please select the callout device which you would like   |
+          |  to use for your modem:                                  |
+          | +------------------------------------------------------+ |
+          | |                cua0  com1: under DOS                 | |
+          | |                cua1  com2: under DOS                 | |
+          | |                cua2  com3: under DOS                 | |
+          | |                cua3  com4: under DOS                 | |
+          | +------------------------------------------------------+ |
+          +----------------------------------------------------------+
+          |                  <  OK  >      <Cancel>                  |
+          +----------------------------------------------------------+
+\end{verbatim}
+
+Sie bekommen nun ein Auswahlmenü angeboten, in dem Sie die serielle Schnittstelle,
+an die das Modem angeschlossen ist, auswählen können. Für die entliehenen PC's
+gilt hier com2 oder unter LINUX: cua1
+
+\begin{verbatim}
+     +----------------------- MOUSE CONFIGURATION ------------------------+
+     |                                                                    |
+     |  This part of the configuration process will create a link in /dev |
+     |  from your mouse device to /dev/mouse. You can change this link    |
+     |  later if the setting chosen does not work, or if you switch to a  |
+     |  different type of mouse.                                          |
+     |                                                                    |
+     |  Would you like to set up your mouse?                              |
+     |                                                                    |
+     +--------------------------------------------------------------------+
+     |                        < Yes >      <  No  >                       |
+     +--------------------------------------------------------------------+
+\end{verbatim}
+
+Hier werden Sie gefragt, ob Sie eine Maus benutzen wollen. Da unser Praktikum dies
+voraussetzt, geben Sie \taste{Return} für \eing{Yes} ein.
+
+\begin{verbatim}
+          +------------------- SELECT MOUSE TYPE --------------------+
+          |             These mouse types are supported:             |
+          | +------------------------------------------------------+ |
+          | |  1  Microsoft compatible serial mouse                | |
+          | |  2  C&T 82C710 or PS/2 style mouse (Auxiliary port)  | |
+          | |  3  Logitech Bus Mouse                               | |
+          | |  4  ATI XL Bus Mouse                                 | |
+          | |  5  Microsoft Bus Mouse                              | |
+          | |  6  Mouse Systems serial mouse                       | |
+          | +------------------------------------------------------+ |
+          |                                                          |
+          +----------------------------------------------------------+
+          |                  <  OK  >      <Cancel>                  |
+          +----------------------------------------------------------+
+\end{verbatim}
+
+In dieser Maske können Sie auswählen, welchen Typ Maus Sie benutzen wollen.
+Für die entliehenen PC's gilt hier: 6. Für Ihren eigenen PC zu Hause müssen
+Sie die Betriebsanleitung studieren, um den Maustyp und die Schnittstelle
+zu bestimmen.
+
+\begin{verbatim}
+          +------------------- SELECT SERIAL PORT -------------------+
+          |  Your mouse requires a serial port. Which one would you  |
+          |  like to use?                                            |
+          | +------------------------------------------------------+ |
+          | |                ttyS0  com1: under DOS                | |
+          | |                ttyS1  com2: under DOS                | |
+          | |                ttyS2  com3: under DOS                | |
+          | |                ttyS3  com4: under DOS                | |
+          | +------------------------------------------------------+ |
+          |                                                          |
+          +----------------------------------------------------------+
+          |                  <  OK  >      <Cancel>                  |
+          +----------------------------------------------------------+
+\end{verbatim}
+
+
+An dieser Stelle werden Sie gefragt, an welcher Schnittstelle die Maus angeschlossen 
+ist. Für die entliehenen PC's gilt: ttyS0  com1: under DOS
+
+\begin{verbatim}
+                      +------- CONFIGURE CD-ROM? -------+
+                      |                                 |
+                      |      Do you have a CD-ROM?      |
+                      |                                 |
+                      +---------------------------------+
+                      |      < Yes >      <  No  >      |
+                      +---------------------------------+
+\end{verbatim}
+
+Diese Frage beantworten Sie mit No! (Wir können Ihnen hierbei keine Hilfestellung geben
+und müssen Sie auf das LINUX Anwenderhandbuch verweisen.)
+
+\begin{verbatim}
+          +------------------ SET YOUR MODEM SPEED ------------------+
+          |  Please select a modem speed. You may use setserial      |
+          |  later to make 38400 stand for a higher baud rate if     |
+          |  these speeds aren't fast enough.                        |
+          | +------------------------------------------------------+ |
+          | |                      38400                           | |
+          | |                      19200                           | |
+          | |                      9600                            | |
+          | |                      4800                            | |
+          | |                      2400                            | |
+          | |                      1200                            | |
+          | |                      300    Ouch!                    | |
+          | +------------------------------------------------------+ |
+          +----------------------------------------------------------+
+          |                  <  OK  >      <Cancel>                  |
+          +----------------------------------------------------------+
+\end{verbatim}
+
+An dieser Stelle wählen Sie aus, mit welcher Übertragungsgeschwindigkeit Ihr
+Modem mit dem Computer zusammenarbeitet. Bei älteren Typen funktioniert 2400,
+bei neuen HighSpeed Modems geben Sie 9600 ein. Ziehen Sie an dieser Stelle
+auch das Handbuch zu Ihrem Modem zu rate.
+
+\begin{verbatim}
+     +------------------------ LILO INSTALLATION -------------------------+
+     |  LILO (the Linux Loader) is the program that allows booting Linux  |
+     |  directly from the hard drive. If you're not familiar with LILO,   |
+     |  you might want to read the help file before you install it.       |
+     |  Which option would you like?                                      |
+     | +----------------------------------------------------------------+ |
+     | |           1  Use OS/2 Boot Manager                             | |
+     | |           2  Install LILO to Master Boot Record                | |
+     | |           3  Skip LILO installation                            | |
+     | |           4  Install LILO to a formatted floppy disk           | |
+     | |           H  Read the Linux Loader HELP file                   | |
+     | +----------------------------------------------------------------+ |
+     +--------------------------------------------------------------------+
+     |                       <  OK  >      <Cancel>                       |
+     +--------------------------------------------------------------------+
+\end{verbatim}
+
+Wir empfehlen, LINUX von der Diskette zu booten. Dies
+macht die geringsten Probleme und stört nicht. Geben Sie \eing{Cancel} ein.
+
+\begin{verbatim}
+          +----------------------------------------------------------+
+          |  Skipping LILO installation, but putting the             |
+          |  configuration file that would be used to boot from      |
+          |  your master boot record into /etc/lilo.conf.MBR.        |
+          |                                                          |
+          |                                                          |
+          +----------------------------------------------------------+
+          |                         <  OK  >                         |
+          +----------------------------------------------------------+
+\end{verbatim}
+
+Diese Meldung mit \taste{Return} bestätigen.
+
+\begin{verbatim}
+       +----------------- SELECTION 1.5 CONFIGURATION -----------------+
+       |  Selection is a program that allows you to do cut and paste   |
+       |  on the virtual consoles using a mouse. If you choose to      |
+       |  have it run at boot time, the line:                          |
+       |                                                               |
+       |      selection -t msc &                                       |
+       |                                                               |
+       |  will be added to the end of your /etc/rc.d/rc.local.         |
+       |                                                               |
+       |  Running selection with a bus mouse can cause problems with   |
+       |  XFree86 2.0.  If XFree86 2.0 refuses to start and complains  |
+       |  that it cannot open the mouse then you might want to comment |
+       |  the line out of /etc/rc.d/rc.local.  Would you like to add   |
+       |                                                               |
+       |      selection -t msc &                                       |
+       |                                                               |
+       |  to /etc/rc.d/rc.local so that selection will load at boot    |
+       |  time?                                                        |
+       |                                                               |
+       +---------------------------------------------------------------+
+       |                     < Yes >      <  No  >                     |
+       +---------------------------------------------------------------+
+\end{verbatim}
+
+An dieser Stelle können Sie ein Programm installieren, das im {\em Textmodus} erlaubt,
+per cut und paste mit der Maus Text zu kopieren. Da wir X-Windows benutzen, das
+diese Funktion sowieso unterstützt, und X-Windows mit diesem Programm nicht
+zusammenarbeitet, brauchen wir das Programm nicht. Geben Sie also \eing{No} ein.
+
+\begin{verbatim}
+                    +------- TIMEZONE CONFIGURATION -------+
+                    |  Select one of the following         |
+                    |  timezones:                          |
+                    | +----------------------------------+ |
+                    | |     Australia/LHI                | |
+                    | |     Australia/NSW                | |
+                    | +-----v(+)-------------------------+ |
+                    +--------------------------------------+
+                    |        <  OK  >      <Cancel>        |
+                    +--------------------------------------+
+\end{verbatim}
+
+An dieser Stelle geben Sie die Zeitzone an, in der Ihre Stadt liegt. Für die
+meisten Kursteilnehmer wird dies MET sein. Bewegen Sie mittels der 
+\taste{Pfeil}-Tasten solange den Balken abwärts, bis er auf MET steht 
+und geben Sie dann \taste{Return} ein.
+
+\begin{verbatim}
+               +---------------------------------------+
+               | System configuration is complete. You |
+               | may EXIT setup and reboot with        |
+               | ctrl - alt - delete                   |
+               +---------------------------------------+
+               |               <  OK  >                |
+               +---------------------------------------+
+\end{verbatim}
+
+
+Die Installation ist nun abgeschlossen. Um zum ersten Mal LINUX zu starten,
+müssen Sie den Rechner neu starten. Legen Sie die neu erstellte Bootdiskette 
+in das Bootlaufwerk ein und drücken Sie, wie in der letzten Mitteilung 
+beschrieben, \taste{Ctrl~-~Alt~-~Delete} um den Rechner neu zu starten.
+
+\section{Benutzerspezifische Änderungen}
+Der Rechner lädt jetzt das für Ihre Festplatte konfigurierte LINUX von 
+Diskette und startet danach alle weiteren Programme von der Festplatte. 
+Das System meldet sich nach erfolgreichem Start mit dem Login Prompt:
+
+\begin{verbatim}
+Linux 0.99.15 (darkstar) (console)
+ 
+ 
+darkstar login: 
+
+\end{verbatim}
+
+Der erste Schritt besteht nun darin, sich anzumelden.
+Geben Sie zu diesem Zweck das Wort \eing{root} ein.
+Sie werden nicht nach einem Password gefragt,
+sondern können sofort arbeiten.
+Der Rechner teilt Ihnen dies mit, indem er folgende Meldung,
+den sogennanten System-Prompt, ausgibt:
+
+\begin{verbatim}
+darkstar:~# 
+\end{verbatim}
+
+\subsection{Einrichten eines Benutzers}
+Damit Sie nicht immer als Benutzer \datei{root} arbeiten müssen, erstellen Sie
+sich als erstes einen neuen Benutzer.
+Geben Sie dazu den Befehl zum Einrichten eines neuen Users \eing{adduser} ein.
+
+\begin{verbatim}
+darkstar:~# adduser
+\end{verbatim}
+
+Sie werden nun gefragt, wie der neue Benutzer heißen soll. Geben Sie Ihren Nachnamen ein
+(in diesem Beispiel werden wir den Namen ,,testuser'' benutzen):
+
+\begin{verbatim}
+Login to add (^C to quit): testuser
+ 
+Editing information for new user [testuser]
+\end{verbatim}
+
+Das Programm \prog{adduser} gibt nun die Aufforderung aus, Vorname und Nachname einzugeben.
+In diesem Beispiel soll der Testuser Hubert heissen.
+
+\begin{verbatim}
+Full Name: Hubert Testuser
+\end{verbatim}
+
+Als nächste Eingabe wird eine Nummer erwartet, die sogenannte ,,Group ID''. Bestätigen Sie
+diese Eingabe einfach nur mit \taste{Return}. Das \prog{adduser}-Programm 
+vergibt dann selbst die nächste freie Nummer.
+
+\begin{verbatim}
+GID [100]: 
+\end{verbatim}
+
+Der nächste Schritt ist die Eingabe der ,,User ID''. Geben Sie auch 
+hier einfach nur \taste{Return} ein. \prog{adduser} wird die nächste freie 
+Nummer für Sie herausfinden.
+
+\begin{verbatim} 
+Checking for an available UID after 500
+First unused uid is 501
+UID [501]: 
+\end{verbatim}
+
+Danach stellt Ihnen \prog{adduser} die Frage an welcher Stelle Sie Ihr sog. ,,Home Directory''
+haben möchten. Bestätigen Sie auch hier einfach mit \taste{Return}.
+
+\begin{verbatim} 
+Home Directory [/home/testuser]: 
+\end{verbatim}
+
+Die nächste Eingabe bezieht sich auf die Wahl Ihrer Shell (so nennt man unter UNIX das
+zeilenorientierte Benutzerinterface, es entspricht COMMAND.COM unter MS-DOS). Auch
+hier geben Sie einfach \taste{Return} ein. Dadurch wählen Sie die Shell 
+mit dem Namen ,,bash'' aus. Genaueres zum Umgang mit dieser Shell entnehmen Sie
+bitte der Dokumentation. (siehe z.B. \eing{man bash})
+
+\begin{verbatim}
+Shell [/bin/bash]: 
+\end{verbatim}
+
+Als letzte Eingabe können Sie noch ein Password eingeben. \prog{adduser} schlägt Ihnen vor,
+den Loginnamen als Password zu benutzen. Geben Sie \taste{Return} ein, um diese Auswahl 
+zu bestätigen. Sie können später noch ein anderes Password wählen.
+
+\begin{verbatim}
+Password [testuser]: 
+\end{verbatim}
+
+An dieser Stelle gibt Ihnen \prog{adduser} eine Zusammenfassung Ihrer Eingaben an.
+
+\begin{verbatim}
+Information for new user [testuser]:
+Home directory: [/home/testuser] Shell: [/bin/bash]
+Password: [testuser] uid: [501] gid: [100]
+\end{verbatim}
+
+Sie müssen jetzt noch alle Angaben bestätigen. Geben Sie ein \eing{y} ein für die Bestätigung,
+daß alle Angaben richtig sind. Wenn Sie an dieser Stelle kein \eing{y} eingeben können Sie alle
+Angaben noch einmal eingeben.
+
+\begin{verbatim}
+Is this correct? [y/N]: y
+\end{verbatim}
+
+Das Programm \prog{adduser} richtet nun den neuen Benutzer auf Ihrem System 
+ein. Bei diesem Vorgang werden einige Dateien kopiert, die die Umgebung des 
+neuen Benutzers definieren. 
+
+\begin{verbatim}
+Adding login [testuser] and making directory [/home/testuser]
+ 
+Adding the files from the /etc/skel directory:
+/etc/skel/.emacs -> /home/testuser/.emacs
+/etc/skel/.fvwmrc -> /home/testuser/.fvwmrc
+/etc/skel/.kermrc -> /home/testuser/.kermrc
+/etc/skel/.less -> /home/testuser/.less
+/etc/skel/.lessrc -> /home/testuser/.lessrc
+/etc/skel/.term -> /home/testuser/.term
+/etc/skel/.term/termrc -> /home/testuser/.term/termrc
+owner of /home/testuser changed to 501.100
+owner of /home/testuser/.emacs changed to 501.100
+owner of /home/testuser/.fvwmrc changed to 501.100
+owner of /home/testuser/.kermrc changed to 501.100
+owner of /home/testuser/.less changed to 501.100
+owner of /home/testuser/.lessrc changed to 501.100
+owner of /home/testuser/.term changed to 501.100
+owner of /home/testuser/.term/termrc changed to 501.100
+
+darkstar:~# 
+\end{verbatim}
+
+Der neue Benutzer ist nun eingerichtet, und das System meldet sich wieder mit dem
+System-Prompt.
+
+\subsection{Kopieren der LINUX Bootdiskette}
+Der nächste Schritt besteht nun darin, eine Kopie Ihrer Bootdiskette
+anzufertigen. Dazu ist es notwendig, zuerst den Inhalt der Bootdiskette 
+auf die Festplatte zu kopieren. Zu diesem Zweck geben Sie das folgende 
+Kommando ein:
+
+\begin{verbatim}
+darkstar:~# dd if=/dev/fd0 of=bootdisk
+\end{verbatim}
+
+Diese Eingabe kopiert alle Daten der Diskette in Ihrem Bootlaufwerk in ein File mit dem
+Namen \datei{bootdisk}. Dies dauert ein oder zwei Minuten. Danach nehmen Sie Ihre Bootdisk
+aus dem Bootlaufwerk heraus und legen eine andere formatierte Diskette in das Bootlaufwerk ein.
+Um das File mit dem Inhalt Ihrer Bootdiskette auf die neue Diskette zu kopieren, geben Sie
+folgendes Kommando ein:
+
+\begin{verbatim}
+darkstar:~# dd if=bootdisk of=/dev/fd0
+\end{verbatim}
+
+In Ihrem Bootlaufwerk befindet sich danach eine Kopie der Bootdiskette. Testen Sie diese 
+Diskette, indem Sie das nächste Mal LINUX von dieser Diskette booten.
+
+\subsection{Anmelden als ,,normaler'' Benutzer}
+Sie können sich nun einmal unter Ihrem eigenen Namen in das System 
+einloggen. Zu diesem Zweck müssen Sie sich erstmal als User \eing{root} 
+abmelden. Geben Sie dazu \eing{exit} ein:
+
+\begin{verbatim}
+darkstar:~# exit
+Linux 0.99.15 (darkstar) (console)
+ 
+ 
+darkstar login: 
+\end{verbatim}
+
+Sie bekommen nun wieder den Login-Prompt. Geben Sie nun Ihren Loginnamen (Nachnamen) ein:
+(In dieser Beispiel natürlich der Name \eing{testuser}). Danach müssen Sie noch das Passwort
+eingeben (hier ebenfalls \eing{testuser}):
+
+\begin{verbatim}
+darkstar login: testuser
+Password: 
+Last login: Fri Mar 18 10:59:04 on console
+Linux 0.99.15. (Posix).
+darkstar:~$ 
+\end{verbatim}
+
+Das Passwort wird aus Sicherheitsgründen nicht angezeigt während Sie es eintippen.
+Sie haben sich nun erfolgreich unter Ihrem Namen angemeldet und können z.B. 
+das X-Windows System mit dem Kommando \prog{startx} starten.
+
+\section{Ausschalten eines LINUX-Rechners}
+
+Sie dürfen einen Rechner unter LINUX keinesfalls einfach ausschalten. Dies 
+könnte zu Inkonsistenzen auf der Festplatte führen. Um den LINUX-Rechner 
+auszuschalten, müssen Sie folgende Schritte ausführen:
+
+\begin{itemize}
+\item Melden Sie sich zuerst ab.
+\item Melden Sie sich dann als User root an.
+\item geben Sie das Kommando \eing{halt} ein.
+\item warten Sie bis die Meldung:
+\end{itemize}
+
+\begin{verbatim}
+halt: sending all processes the TERM signal ......................
+halt: sending all processes the KILL signal ..
+Unmounting file systems .....
+Done
+The system is halted
+\end{verbatim}
+auf dem Bildschirm erscheint. Danach können Sie den Computer ausschalten oder DOS
+booten. Um DOS zu booten legen Sie einfach eine DOS Diskette in Laufwerk A: oder
+legen Sie keine Diskette in Laufwerk A:. Wenn Sie mit LINUX arbeiten wollen,
+legen Sie beim einschalten eine der erstellten LINUX-Bootdisketten in Laufwerk A:.
+
+\section{Die Online-Hilfestellung}
+LINUX stellt für alle Befehle eine Kurzbedienungsanleitung bereit, die sog. man-Page. Sie
+können diese Kurzanleitungen jederzeit mit dem Kommando \prog{man} aufrufen. Sie
+können z.B. Hilfestellung zum \prog{man}-Kommando bekommen, indem Sie
+\eing{man man} eingeben.
+
+Die man-Pages sind übrigens ins Deutsche übersetzt worden und im LINUX-Anwenderhandbuch
+abgedruckt. 
+
+Welche Kommandos unter einem UNIX-System verfügbar sind entnehmen Sie bitte der
+Literatur über UNIX. Falls ein Kommando aus der Literatur nicht so arbeitet wie
+dort beschrieben, so sehen Sie in den man pages nach wie dieses Kommando in unserem
+System arbeitet.
+
+Ansonsten können Sie auch mit dem Autor dieses Textes in Verbindung treten und
+Ihre Fragen direkt stellen. Auch bei allen Problemen oder Abweichungen zu unserer
+Anleitung sollten Sie sich bei uns melden. Sehr häufig können Sie die Lösung
+aber auch selbst herausbekommen, indem Sie die Anleitungen aufmerksam durchlesen.
+In der Praxis ist das der ''normale'' Weg.
+
+
+\end{document}

@@ -1,0 +1,96 @@
+# Makefile fuer Gardens Point Modula-2 und Linux
+# Systemunabhaengige Variablen einlesen
+include Make.src
+
+# Systemabhaengige Variablen einlesen
+include Make.$(OSNAME)
+
+.SUFFIXES:	.m2i .mod .m2d .def .syx
+
+# Directories fuer die Installation
+INSTALLSYMDIR = /usr/soft/main/gpm/m2sym
+INSTALLLIBDIR = /usr/soft/main/gpm/elf-m2lib
+
+# Files zur Installation in INSTALLSYMDIR
+SYMFILES =	args.def	\
+		args.syx	\
+		intern_lib.syx 	\
+		xgraphic.def 	\
+		xgraphic.syx
+
+# Files zur Installation in der INSTALLLIBDIR
+LIBFILES =	args.o		\
+		args.rfx	\
+		intern_lib.o 	\
+		libInternLib.a	\
+		xgraphic.o 	\
+		xgraphic.rfx
+
+.m2d.def:
+	$(MPP) $(PPDEBUG) gpm $*.m2d > $*.def
+
+.m2i.mod:
+	$(MPP) $(PPDEBUG) gpm $*.m2i > $*.mod
+
+.c.o:
+	$(CC) $(CFLAGS) -c $*.c
+
+.def.syx:
+	$(GPM) $*.def
+
+.mod.o:
+	$(GPM) $*.mod
+
+
+
+all: args.o numconv.o xgraphic.o graftest 
+
+args.syx:	args.def
+
+args.o:		args.mod args.syx
+
+xgraphic.o:	intern_lib.syx xgraphic.syx xgraphic.mod
+
+xgraphic.mod:	xgraphic.m2i
+
+xgraphic.syx:	xgraphic.def xgraphic.mod intern_lib.syx
+
+intern_lib.syx:	intern_lib.def intern_lib.o libInternLib.a
+
+intern_lib.o:	$(INTERNOBJECTS) 
+	ld -r -o intern_lib.o $(INTERNOBJECTS) 
+
+libInternLib.a:	$(INTERNOBJECTS)
+	ar rus libInternLib.a $(INTERNOBJECTS)
+
+Draw.o:		Draw.c Intern.h
+
+Filebrowser.o:	Filebrowser.c Intern.h
+
+Haupt.o:	Haupt.c Intern.h Menues.h
+
+InputIntStr.o:	InputIntStr.c Intern.h
+
+Menues.o:	Menues.c Intern.h Menues.h
+
+
+# --- Ende der Library, es folgen Beispielprogramme
+
+numconv.syx:	numconv.def
+
+numconv.o:	numconv.syx numconv.mod
+
+graftest:	graftest.o xgraphic.o intern_lib.o
+	build -D -L. graftest
+
+graftest.o:	graftest.mod xgraphic.syx intern_lib.syx
+	$(GPM) graftest.mod
+
+# --- Sonstige Targets fuer Make
+clean:
+	rm -f *.o core *.def *.mod *.syx  *.rfx lib*.a graftest
+
+install:	$(LIBFILES) $(SYMFILES)
+	install -m 0664 $(LIBFILES) $(INSTALLLIBDIR)
+	install -m 0664 $(SYMFILES) $(INSTALLSYMDIR)
+

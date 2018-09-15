@@ -1,0 +1,23 @@
+IMPLEMENTATION MODULE args;
+
+FROM Types IMPORT SHORTCARD;
+
+FROM ProgArgs IMPORT ArgNumber,GetArg;
+
+FROM Storage IMPORT ALLOCATE;
+
+FROM SYSTEM IMPORT TSIZE;
+
+
+PROCEDURE GetArgs(VAR argc:SHORTCARD;VAR argv:ArgTable);
+VAR i:SHORTCARD;
+BEGIN
+    argc:=ArgNumber();
+    ALLOCATE(argv,TSIZE(Feld));
+    FOR i:=0 TO argc-1 DO
+       ALLOCATE(argv^[i],TSIZE(Str));
+       GetArg(i,argv^[i]^);
+    END;
+END GetArgs;
+
+END args.

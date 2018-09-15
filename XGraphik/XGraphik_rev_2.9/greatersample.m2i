@@ -1,0 +1,65 @@
+
+MODULE greatersample;
+
+FROM Arguments IMPORT GetArgs, ArgTable;
+
+FROM XGraphic IMPORT XG_Init,
+                     XG_StartMainLoop,
+                     XGN_ShowNotice,
+                     XGM_NewMenu,
+                     XGM_AppendItem,
+                     XGM_CreateMenu,
+                     XGD_Clear,
+                     XGD_DrawCircle,
+                     XGE_X_Position,
+                     XGE_Y_Position,
+                     XGE_Button_L,
+                     XGE_Button_R,
+                     Schwarz;
+
+VAR cx, cy : INTEGER; (* Um die Mauskoordinaten im Eventhandler abzufragen *)
+    Anz : SHORTCARD;  (* Anzahl der Kommandozeilenparameter                *)
+    Args : ArgTable;  (* Die Komanndozeilenparameter                       *)
+    handle : INTEGER; (* Handle fuer Menueerschaffung und -manipulation    *)
+
+
+PROCEDURE Repaint();
+BEGIN
+    XGD_Clear(); 
+    XGD_DrawCircle (cx, cy, 10, FALSE, Schwarz);
+    (* Male einen Kreis um den Punkt (cx, cy) mit dem Radius 10 in der Farbe
+       Schwarz (nicht ausgefuellt) *)
+END Repaint;
+
+
+PROCEDURE Event() : BOOLEAN;
+BEGIN
+    IF XGE_Button_L()=TRUE THEN
+        cx := XGE_X_Position();
+        cy := XGE_Y_Position();
+        RETURN TRUE;
+    END;
+    RETURN FALSE;
+END Event;
+(* Beachte: Nach Beendigung der Event-Funktion wird vom System die
+Repaint-Funktion aufgerufen, sofern dies notwendig ist (RETURN TRUE). *)
+
+
+PROCEDURE Menue (Nummer : INTEGER);
+BEGIN
+    IF (Nummer = 2) THEN
+        XGN_ShowNotice ("Hello, World");
+    END;
+END Menue;
+
+
+BEGIN
+    GetArgs (Anz, Args);
+    XG_Init (Anz, Args, PROC(Repaint), PROC(Event));
+    handle := XGM_NewMenu ("Testmenue");
+    XGM_AppendItem (handle, "Punkt 1");
+    XGM_AppendItem (handle, "Hallo!");
+    XGM_CreateMenu (handle, PROC(Menue));
+    XG_StartMainLoop();
+END greatersample.
+

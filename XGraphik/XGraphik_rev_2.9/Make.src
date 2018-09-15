@@ -1,0 +1,14 @@
+# Systemunabhaengige Variablen:
+# - Die Namen der .o-Dateien, aus denen sich Intern_lib.o zusammensetzt
+
+
+INTERNOBJECTS =	Draw.o\
+		Filebrowser.o\
+		Haupt.o\
+		InputIntStr.o\
+		Menues.o
+
+PPDEBUG =	YES
+
+DEBUG =		-g
+

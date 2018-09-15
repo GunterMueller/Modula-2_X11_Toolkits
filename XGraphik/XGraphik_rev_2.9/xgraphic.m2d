@@ -1,0 +1,573 @@
+DEFINITION MODULE xgraphic;
+
+(*
+** XGraphic.md
+** -----------
+** Definitionsmodul des XGraphic-Paketes zur Programmierung
+** von XView 3.0 mit Modula-2.
+** --------------------------------------------------------
+*)
+
+IMPORT  intern_lib;
+
+FROM    SYSTEM          IMPORT  ADDRESS;
+
+#ifmocka
+
+FROM    Strings         IMPORT  String;
+
+FROM    Arguments       IMPORT  ArgTable;
+
+#endmocka
+
+
+#ifgpm
+
+FROM    Types           IMPORT  SHORTCARD;
+
+FROM    StdStrings      IMPORT  String;
+
+FROM 	args		IMPORT  ArgTable;
+
+#endgpm
+
+
+(*
+** Farbdefinition
+*)
+
+TYPE tColor = (Weiss,
+               Hellrot,     Mittelrot,     Dunkelrot,
+               Hellgruen,   Mittelgruen,   Dunkelgruen,
+               Hellgelb,    Mittelgelb,    Dunkelgelb,
+               Hellblau,    Mittelblau,    Dunkelblau,
+               Helltuerkis, Mitteltuerkis, Dunkeltuerkis,
+               Hellgrau,    Mittelgrau,    Dunkelgrau,
+               Schwarz);
+
+
+
+PROCEDURE XG_Init (    AnzahlArgumente : SHORTCARD;          (* IN     *)
+                       Argumente       : ArgTable;           (* IN     *)
+                       CB_Repaint      : PROC;               (* IN     *)
+                       CB_Event        : PROC);              (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Initialisierung des XView-Paketes
+** ----------------------------------------------------------------------
+** Eingabe     : AnzahlArgumente : Die durch Arguments.GetArgs() fest-
+**                                 gestellte Anzahl von Kommandozeilen-
+**                                 parametern
+**               Argumente       : Die Tabelle der Argumente aus diesem
+**                                 Aufruf
+**               CB_Repaint      : Addresse der Callback-Funktion, die
+**                                 fuer einen Repaint aufgerufen wird
+**               CB_Event        : Addresse der Callback-Funktion, die
+**                                 als Event-Handler fungiert.
+** ----------------------------------------------------------------------
+** CB_Event:
+** PROCEDURE Event ();
+** Event wird durch Funktionsaufrufe untersucht, und die entsprechende
+** Reaktion ausgeloest. 
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XG_StartMainLoop ();                               (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Start der Hauptschleife
+** ----------------------------------------------------------------------
+*)
+
+PROCEDURE XG_SetTimer (   IntervalTime : INTEGER;
+                          callback     : PROC);
+
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Setzt den Timer auf ein Interval von IntervalTime
+**                 Millisekunden
+** Parameter   : IN IntervalTime - Zeit zwischen zwei Aufrufen in ms
+**               : IN callback - Addresse der callback-Funktion
+** ----------------------------------------------------------------------
+*)
+
+PROCEDURE XGM_NewMenu (    label : ARRAY OF CHAR)            (* IN     *)
+                                                 : INTEGER;
+(* 
+** ----------------------------------------------------------------------
+** Funktion    : Einrichten eines neuen Menues
+** ----------------------------------------------------------------------
+** Parameter   : IN label - Name des Menues
+** Rueckgabe   : Handle auf das neue Menue
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGM_AppendItem (    mHandle : INTEGER;             (* IN     *)
+                              label : ARRAY OF CHAR);        (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Einrichten eines neuen Menueeintrages
+** ----------------------------------------------------------------------
+** Parameter   : IN mHandle - Handle auf das Menue aus NewMenu()
+**               IN label   - Name des Eintrags
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGM_CreateMenu (    mHandle : INTEGER;             (* IN     *)
+                              callback : PROC);              (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Erstellen und anzeigen des neuen Menues
+** ----------------------------------------------------------------------
+** Parameter   : IN mHandle  - Handle auf das Menue
+**               IN callback - Addresse der Prozedur (Syntax s.u.), die
+**                             die Interaktion bearbeitet.
+** ----------------------------------------------------------------------
+** callback:
+** PROCEDURE callback (number : INTEGER);
+** Parameter: IN number - Die Nummer des Menue-Eintrages. Der mit dem
+** ersten Aufruf von XGM_Append an ein neues Menue angehaengte Eintrag
+** hat die Nummer 1, der naechste die Nummer 2, ...
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGM_SetItemActivity (    Handle : INTEGER;         (* IN     *)
+                                   Nummer : INTEGER;         (* IN     *)
+                                   Status : BOOLEAN);        (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Menueeintrag deaktivieren bzw. aktivieren.
+** ----------------------------------------------------------------------
+** Parameter   : IN Handle - Handle des Menues, wird von CreateMenu()
+**                           geliefert
+**               IN Nummer - Die Nummer des zu aendernden Menuepunktes
+**               IN Status - Der neue Zustand des Eintrages. 0 = Inaktiv
+**                           Jeder andere Wert : Aktiv
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGF_SetLeft (    text : ARRAY OF CHAR);            (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Linken Fusszeilentext aendern
+** ----------------------------------------------------------------------
+** Parameter   : IN text - Auszugebender Text
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGF_SetRight (    text : ARRAY OF CHAR);           (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Rechten Fusszeilentext aendern
+** ----------------------------------------------------------------------
+** Parameter   : IN text - Auszugebender Text
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGF_SetDefault ();                                 (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Default-Texte in der Statuszeile ausgeben
+** ----------------------------------------------------------------------
+** Parameter   : Keine
+** ----------------------------------------------------------------------
+** Ausgegeben wird in der linken Statuszeile eine Copyright-Meldung und
+** in der rechten Statuszeile die Revisions-Nummer der Bibliothek
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGN_InputInt (    prompt : ARRAY OF CHAR;          (* IN     *)
+                            start  : INTEGER;                (* IN     *)
+                            lbound : INTEGER;                (* IN     *)
+                            ubound : INTEGER;                (* IN     *)
+                            ticks  : INTEGER);               (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Eingabefenster f. Ganze Zahl erstellen
+** ----------------------------------------------------------------------
+** Parameter   : IN prompt - Addresse des Textes, der als Prompt
+**                           angezeigt wird
+**               IN start  - Anfangswert
+**               IN lbound - Untergrenze der Zahl
+**               IN ubound - Obergrenze
+**               IN ticks  - Anzahl Unterteilungen des Sliders
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGN_GetLastInteger (VAR Int : INTEGER)             (*    OUT *)
+                                                : BOOLEAN;  
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Den zuletzt gelesenen Integer zurueckgeben
+** ----------------------------------------------------------------------
+** Parameter   : OUT Int - Eingegebene Zahl
+** Rueckgabe   : TRUE - Zahl wurde eingegeben, Int ist gueltig
+**               FALSE - Abbruch, Int ist ungueltig
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGN_ShowNotice (    Text : ARRAY OF CHAR);         (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Textmeldung ausgeben
+** ----------------------------------------------------------------------
+** Parameter   : IN text - Auszugebender Text
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGN_InputString (    prompt : ARRAY OF CHAR);      (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Fenster f. String-Eingabe anzeigen
+** ----------------------------------------------------------------------
+** Parameter   : IN prompt - Auszugebender Prompt
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGN_GetLastString (VAR Str : ARRAY OF CHAR)        (*    OUT *)
+                                                     : BOOLEAN;
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Zuletzt eingegebenen String auslesen
+** ----------------------------------------------------------------------
+** Parameter   : OUT Str - Eingegebener String
+** Rueckgabe   : TRUE  - Text ist gueltig, Benutzer hat OK gewaehlt
+**              FALSE - Benutzer hat CANCEL gewaehlt, Str ist 'CANCELLED'
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGN_FileSelector (    mask : ARRAY OF CHAR);       (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Fileselector-Box aufbauen
+** ----------------------------------------------------------------------
+** Parameter   : IN mask - Ein Muster (z.B. *.c) das die Dateien, die 
+**                         - angezeigt werden einschraenkt.
+**                         - Dieses Muster kann im Dialog noch geaendert
+**                         - werden.
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGN_GetFileName (VAR filename : ARRAY OF CHAR)     (*    OUT *)
+                                                        : BOOLEAN;
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Eingegebenen Dateinamen erfragen
+** ----------------------------------------------------------------------
+** Parameter   : OUT filename - eingegebener Dateiname
+** ----------------------------------------------------------------------
+** Rueckgabe   : TRUE - Benutzer hat OK angeklickt
+**               FALSE - Benutzer hat CANCEL angeklickt
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGN_YesOrNo (    prompt : ARRAY OF CHAR)           (* IN     *)
+                                                 : BOOLEAN;
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Ja-/Nein-Frage stellen
+** ----------------------------------------------------------------------
+** Parameter   : IN prompt - Auszugebende Frage, '|' steht fuer NewLine
+** ----------------------------------------------------------------------
+** Rueckgabe   : TRUE  - Benutzer hat YES angeclickt
+**               FALSE - Benutzer hat NO angeclickt
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGD_NoClipping();
+
+
+PROCEDURE XGD_SetClipping (	px : INTEGER;
+				py : INTEGER;
+				w : INTEGER;
+				h : INTEGER);
+
+
+PROCEDURE XGD_DrawArrowLine (
+                            x1 : INTEGER;                    (* IN     *)
+                            y1 : INTEGER;                    (* IN     *)
+                            x2 : INTEGER;                    (* IN     *)
+                            y2 : INTEGER;                    (* IN     *)
+                            width : INTEGER;                 (* IN     *)
+                            color : tColor);                 (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Linie zeichnen, mit einem Pfeil in der Mitte.
+**             : Der Pfeil zeigt von (x1,y1) nach (x2,y2)
+** ----------------------------------------------------------------------
+** Parameter   : IN x1, y1 - Koordinaten des ersten Punktes
+**               IN x2, y2 - Koordinaten des zweiten Punktes
+**               IN w      - Linienbreite
+**               IN color  - Farbindex der zu verwendenden Farbe
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGD_DrawLine (    x1 : INTEGER;                    (* IN     *)
+                            y1 : INTEGER;                    (* IN     *)
+                            x2 : INTEGER;                    (* IN     *)
+                            y2 : INTEGER;                    (* IN     *)
+                            w  : INTEGER;                    (* IN     *)
+                            color : tColor);                 (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Linie zeichnen
+** ----------------------------------------------------------------------
+** Parameter   : IN x1, y1 - Koordinaten des ersten Punktes
+**               IN x2, y2 - Koordinaten des zweiten Punktes
+**               IN w      - Linienbreite
+**               IN color  - Farbindex der zu verwendenden Farbe
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGD_DrawCircle (    x : INTEGER;                   (* IN     *)
+                              y : INTEGER;                   (* IN     *)
+                              r : INTEGER;                   (* IN     *)
+                              filled : BOOLEAN;              (* IN     *)
+                              color : tColor);               (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Kreis zeichnen
+** ----------------------------------------------------------------------
+** Parameter   : IN x, y   - Koordinaten des Mittelpunktes
+**               IN r      - Radius
+**               IN filled - TRUE, wenn gefuellt werden soll
+**               IN color  - zu verwendende Farbe (Farbindex, siehe
+**                           Modul Typedefs.
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGD_DrawString (    x    : INTEGER;                (* IN     *)
+                              y    : INTEGER;                (* IN     *) 
+                              text : ARRAY OF CHAR;          (* IN     *)
+                              color : tColor);               (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Text ausgeben
+** ----------------------------------------------------------------------
+** Parameter   : IN x, y  - Koordinaten des unteren, linken Punktes des
+**                          auszugebenden Textes
+**               IN text  - der auszugebende Text
+**               IN color - zu verwendende Farbe, siehe Konstanten am
+**                          Anfang
+** ----------------------------------------------------------------------
+*)
+
+
+PROCEDURE XGD_GetStringExtents (    text : ARRAY OF CHAR;    (* IN     *)
+				VAR w    : INTEGER;          (*    OUT *)
+				VAR h    : INTEGER);         (*    OUT *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Abmessungen (in Pixel) eines Textes ermitteln
+** ----------------------------------------------------------------------
+** Parameter   : IN  text  - der zu bearbeitende Text
+**               OUT w, h  - die Abmessungen (Breite, Hoehe)
+** ----------------------------------------------------------------------
+*)
+
+
+PROCEDURE XGD_BeginPoly (    n : INTEGER);                   (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Polygon oder Linienzug einleiten
+** ----------------------------------------------------------------------
+** Parameter   : IN n - Maximale Anzahl der Polygon-Punkte
+** ----------------------------------------------------------------------
+*)
+
+
+PROCEDURE XGD_AddPolyPoint (    x : INTEGER;                 (* IN     *)
+                                y : INTEGER);                (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Einen Punkt an Polygon anhaengen
+** ----------------------------------------------------------------------
+** Parameter   : IN x, y - Absolute Koordinaten des Punktes
+** ----------------------------------------------------------------------
+** Bemerkung   : Die Kanten des Polygons duerfen sich schneiden.
+** ----------------------------------------------------------------------
+*)
+
+
+PROCEDURE XGD_DrawPoly (    closed : BOOLEAN;                (* IN     *)
+                            filled : BOOLEAN;                (* IN     *)
+                            width  : INTEGER;                (* IN     *)
+                            color  : tColor);                (* IN     *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Polygon endgueltig malen
+** ----------------------------------------------------------------------
+** Parameter   : IN closed - TRUE fuer geschlossenes Polygon, FALSE fuer
+**                           Linienzug
+**               IN filled - TRUE fuer gefuelltes Polygon, FALSE sonst
+**                           Bei TRUE wird closed nicht beachtet.
+**               IN width  - 0-5, die Linienbreite
+**               IN color  - Die Farbe
+** ----------------------------------------------------------------------
+*)
+
+
+PROCEDURE XGD_Clear ();                                      (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Loeschen des Malbereichs
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGD_Flush ();
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Erzwinge ein Neuzeichnen des gesamten Fensters
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGE_Button_L () : BOOLEAN;                         (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Status der linken Maustaste abfragen
+** ----------------------------------------------------------------------
+** Rueckgabe   : TRUE - Taste gedrueckt
+**               FALSE - Taste nicht gedrueckt
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGE_Button_M () : BOOLEAN;                         (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Status der mittleren Maustaste abfragen
+** ----------------------------------------------------------------------
+** Rueckgabe   : TRUE - Taste gedrueckt
+**               FALSE - Taste nicht gedrueckt
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGE_Button_R () : BOOLEAN;                         (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Status der rechten Maustaste abfragen
+** ----------------------------------------------------------------------
+** Rueckgabe   : TRUE - Taste gedrueckt
+**               FALSE - Taste nicht gedrueckt
+** ----------------------------------------------------------------------
+*)
+
+PROCEDURE XGE_MouseMove () : BOOLEAN;                         (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Abfragen ob der letzte Event ein Mousemove Event war
+** ----------------------------------------------------------------------
+** Rueckgabe   : TRUE - der letzte Event war ein Move-Event
+**               FALSE - der letzte Event war kein Move-Event
+** ----------------------------------------------------------------------
+*)
+
+PROCEDURE XGE_ButtonEvent () : BOOLEAN;                         (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Abfragen ob der letzte Event ein Button-Event war
+** ----------------------------------------------------------------------
+** Rueckgabe   : TRUE - der letzte Event war ein Button-Event
+**               FALSE - der letzte Event war kein Button-Event
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGE_X_Position () : INTEGER;                       (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : X-Koordinate der Maus abfragen
+** ----------------------------------------------------------------------
+** Rueckgabe   : X-Koordinate
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGE_Y_Position () : INTEGER;                       (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Y-Koordinate der Maus abfragen
+** ----------------------------------------------------------------------
+** Rueckgabe   : Y-Koordinate
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGE_KeyCode () : CHAR;                             (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Letzten Tastendruck abfragen
+** ----------------------------------------------------------------------
+** Rueckgabe   : ASCII-Wert der gedrueckten Taste
+** ----------------------------------------------------------------------
+*)
+
+
+
+PROCEDURE XGE_KeyPressed() : BOOLEAN;                        (*        *)
+(*
+** ----------------------------------------------------------------------
+** Funktion    : Abfrage, ob Taste gedrueckt
+** ----------------------------------------------------------------------
+** Ruckgabe    : TRUE wenn Taste gedrueckt, FALSE sonst
+** ----------------------------------------------------------------------
+*)
+
+PROCEDURE XG_Sleep (Seconds: INTEGER) : INTEGER;
+(*
+** ----------------------------------------------------------------------
+** Funktion    : wartet seconds Sekunden
+** ----------------------------------------------------------------------
+** Rueckgabe   : anzahl der noch 'offenen Sekunden'
+** ----------------------------------------------------------------------
+*)
+
+END xgraphic.

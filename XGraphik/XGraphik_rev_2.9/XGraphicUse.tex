@@ -1,0 +1,631 @@
+\documentstyle[german,din-a4,listing,twoside,abkuerzungen]{article}
+%\makeindex
+\pagestyle{headings}
+
+\title{Programmierung mit der XGraphic-Bibliothek}
+\author{Alexander Sch"olling \and
+Stefan Wohlfeil}
+\date{August 1996}
+
+\begin{document}
+% Auf das Inhaltsverzeichnis verzichten wir besser.
+% 15.3 Stefan
+% \tableofcontents
+% \pagebreak
+\maketitle
+
+
+\newcommand{\prochead}[1]{{{#1}\index{#1}}}
+\newcommand{\syntax}[1]{\item[Syntax:] {\tt #1}}
+\newcommand{\param}[1]{\item[Parameter:] {#1}}
+\newcommand{\func}[1]{\item[Funktionalit"at:] {#1}}
+\newenvironment{commanddesc}{%
+	\begin{description}
+}{%
+	\end{description}
+}
+
+
+
+
+\section{Einf"uhrung}
+
+ Die Programmierung unter einem graphischen Fenstersystem (wie \zB\  
+ X-Windows) unterscheidet sich grundlegend von der Programmierung auf
+ zeilenorientierten Terminals.
+ Dort hat in der Regel das Programm den Benutzer gef"uhrt. Brauchte
+ das Programm verschiedene Eingaben vom Benutzer, so hat es diese
+ nacheinander, \zB\  durch Men"us abgefragt. Ein Benutzer konnte also
+ immer nur eine bestimmte Eingabe machen.
+
+ Ein typisches Programmst"uck sah wie folgt aus:
+\begin{verbatim}
+ REPEAT
+    ZeigeMenue1();
+    Taste := LeseTastatur()
+ UNTIL ErlaubtInMenue1 (Taste);
+ REPEAT
+    ZeigeMenue2();
+    Taste := LeseTastatur()
+ UNTIL ErlaubtInMenue2 (Taste);
+ ...
+\end{verbatim}
+
+ Heutzutage m"ochte ein Benutzer sich aber nicht vom Programm vorschreiben
+ lassen, wann er welche Eingaben machen mu"s. Das Programm soll auf die
+ Eingaben des Benutzers reagieren. Aus Sicht des Programms treten also
+ st"andig Ereignisse auf, auf die das Programm reagieren mu"s. M"ogliche
+ Ereignisse sind:
+
+\begin{itemize}
+   \item Taste gedr"uckt bzw. losgelassen
+   \item rechter/mittlerer/linker Mausknopf gedr"uckt bzw. losgelassen
+   \item Mauszeiger ist in einen bestimmten Bildschirmbereich eingetreten
+   \item ...
+\end{itemize}
+
+ Au"serdem hat man heute in der Regel mehrere Programme gleichzeitig
+ auf einem Computer laufen. Daher m"ussen die auftretenden Ereignisse
+ dem richtigen Programm zugeordnet werden. Dr"uckt der Benutzer \zB\ 
+ eine Taste, so mu"s entschieden werden welches Programm auf diesen
+ Tastendruck reagieren soll.
+ 
+ Ein typisches Programmst"uck sah wie folgt aus:
+\begin{verbatim}
+ REPEAT
+    Ereignis := HoleEreignis();
+    BearbeiteEreignis (Ereignis);
+ UNTIL fertig;
+
+ PROCEDURE BearbeiteEreignis ( Ereignis : ... );
+ BEGIN
+    CASE Ereignis OF
+
+       (* lange Liste aller moeglichen Ereignisse *)
+
+    END; (* CASE *)
+ END BearbeiteEreignis;
+\end{verbatim}
+
+ Um sich die Programmierung zu erleichtern, gibt es nun verschiedene
+ Bibliotheken, die einige, immer gleich zu behandelnde Ereignisse
+ bearbeiten und ansonsten die Ereignisse automatisch an das richtige
+ Programm weiterleiten. Als Programmierer mu"s man nur noch angeben,
+ welche der selbstgeschriebenen Funktionen bei einem bestimmten
+ Ereignis aufgerufen werden soll.
+
+ Der typische Ablauf dabei ist wie folgt: Zun"achst erzeugt der
+ Programmierer die Objekte (Fenster, Menues, Scrollbalken, Kn"opfe, etc.)
+ aus denen die Oberfl"ache bestehen soll. Anschliessend wird eine
+ Prozedur aufgerufen, die die eintretenden Ereignisse "uberwacht und
+ die jeweiligen Funktionen, die der Programmierer bei der Erzeugung
+ der Objekte angegeben hat, aufruft.
+
+ Ein typisches Programmst"uck sieht wie folgt aus:
+\begin{verbatim}
+ PROCEDURE BearbeiteKnopf ( ... (* Parameter siehe jeweils im Handbuch *) );
+ BEGIN
+    WriteString("Der Knopf wurde gedrueckt!");
+ END BearbeiteKnopf;
+
+ BEGIN
+ ...
+ Erzeuge_Objekt( Knopf, 
+     KnopfText,  "Hier druecken!",
+     KnopfKoordinaten,   100, 100,
+     KnopfEventHandler,  BearbeiteKnopf, (* Hier wird als Parameter die   *)
+                                         (* Adresse einer Prozedur ueber- *)
+                                         (* geben.                        *)
+     ENDE );
+
+ Hauptschleife();
+ END.
+\end{verbatim}
+
+ In der Prozedur Hauptschleife, die vom System zur Verf"ugung gestellt wird,
+ werden alle auftretenden Events bearbeitet und bei Bedarf die vom
+ Programmierer geschriebenen Funktionen (BearbeiteKnopf) aufgerufen.
+ Mehr zu diesem Thema k"onnen Sie \ua\ im Kurs 1817 {\em Programmierung
+ graphischer Benutzerschnittstellen} nachlesen.
+
+ Welche Objekte vorhanden sind, welche Attribute (\zB\  Koordinaten) ein
+ bestimmtes Objekt haben kann, wie die Parameterliste der zu
+ programmierenden Call-back Funktionen (BearbeiteKnopf) genau aussieht
+ und viele weitere Details mu"s der Programmierer den Handb"uchern der
+ Bibliothek entnehmen. Der typische Umfang dieser Handb"ucher liegt
+ bei ca.\ 600 Seiten. Damit Sie sich im Praktikum nun nicht mit allen
+ Details befassen m"ussen, habe wir eine kleine Bibliothek mit den
+ wichtigsten Funktionen f"ur Sie erstellt.
+ 
+
+
+%
+% Noch einen Abschnitt zu Toolkits wie xview einfuegen!
+% Werde ich (Stefan) noch schreiben.
+%
+% 14.3.94 Erledigt.
+%
+
+Die Bibliothek XGraphic erleichtert Ihnen die Programmierung von unter
+X Windows ablaufenden Programmen, indem sie etliche Routinearbeiten
+bereits erledigt. Dazu geh"ort zum Beispiel der vordefinierte Button
+QUIT mit der dazugeh"origen Funktion; dadurch brauchen Sie sich nicht
+mehr darum k"ummern, da"s ein Benutzer Ihr Programm beenden kann. Auch
+wird die Programmierung von Men"us auf die Verwendung von drei Befehlen
+mit wenigen Parametern reduziert. Die Bibliothek stellt Ihnen weiterhin
+einfache Befehle zur Verf"ugung, um herauszufinden, wo sich die Maus
+befindet oder welche Taste gedr"uckt wurde. In Kapitel \ref{Beispiel}
+sind zwei Beispielprogramme abgedruckt. Das Erste ist das
+k"urzestm"ogliche Beispielprogramm, es tut nichts au"ser ein Fenster
+auf den Bildschirm bringen. In diesem Fenster passiert aber nichts. Das
+zweite Beispielprogramm erledigt bereits eine einfache
+Benutzerkommunikation mit zwei einfachen Men"us und einem einfachen
+Malteil.
+
+
+
+
+
+\section{Namenskonventionen}
+Alle Funktionsnamen aus der Library beginnen in jedem Fall mit den
+Gro"sbuchstaben XG, gefolgt von entweder einem Unterstrich oder einem
+weiteren Gro"sbuchstaben und einem Unterstrich. Dieses K"urzel gibt die
+Zugeh"origkeit der Funktion zu einer der folgenden Kategorien an:
+\begin{itemize}\index{Funktionsgruppen}
+   \item[XG]{Allgemeine Funktionen, Initialisierung des Systems und
+       Start der Hauptschleife. Siehe Kapitel: \ref{XG}.}
+   \item[XGM]{Men"ufunktionen, Definition und "Anderung von
+       Men"us. Siehe Kapitel: \ref{XGM}.}
+   \item[XGF]{Fu"szeilen-Funktionen, Textausgabe in die
+       Fu"szeile des Fensters. Siehe Kapitel: \ref{XGF}.}
+   \item[XGN]{Ein-/Ausgabe-Funktionen, Funktionen f"ur
+       Mitteilungsfenster und Eingabefenster. Siehe Kapitel: \ref{XGN}.}
+   \item[XGD]{Malfunktionen, Funktionen zum Zeichnen
+       und Schreiben in den Malbereich des Fensters. Siehe Kapitel: \ref{XGD}.}
+   \item[XGE]{Event-Behandlung, Funktionen zur Aufschl"ussellung
+       von Events. Kapitel \ref{XGE}.}
+\end{itemize}
+
+
+
+
+
+\section{Funktionsdefinitionen}
+In diesem Abschnitt stellen wir Ihnen die einzelnen Funktionen der
+Library vor. Zu jeder Funktion geben wir eine Erkl"arung zu den
+Parametern der Funktion, sowie eine kurze Beschreibung was die
+Funktion macht. Die genauen Namen der Funktion, die Typen der
+Parameter, die Reihenfolge der Parameter, etc. entnehmen Sie dem
+Definitionsmodul zu unserer Library das auf dem Rechner zur
+Verfügung steht.
+%
+% evtl. einen Verweis einfuegen, wo der Definition Module zu
+% finden ist. Das muss nicht hier im Dokument sein.
+%
+% abgehakt, Alexander, 9.3.94
+
+
+
+\subsection{Allgemeine Funktionen\label{XG}}
+
+\subsubsection{\prochead{Init}}
+\begin{commanddesc}
+\syntax{XG\_Init (AnzahlParameter, ParameterListe,
+PROC(RepaintCallback), PROC(Event\-Callback));}
+\param{"Ubergeben werden die Anzahl und eine Tabelle
+der Kommandozeilen-Parameter sowie die Addressen der
+beiden ben"otigten Callback-Funktionen.}
+\func{Das Programmfenster wird auf den Bildschirm gebracht
+und initialisiert.}
+\end{commanddesc}
+
+\subsubsection{\prochead{StartMainLoop}}
+\begin{commanddesc}
+\syntax{XG\_StartMainLoop();}
+\param{Keine.}
+\func{Die Hauptschleife des Systems wird gestartet. Die Kontrolle
+liegt jetzt beim System und nur wenn ein Ereignis eintritt,
+wird eine Callback-Funktion aufgerufen.}
+\end{commanddesc}
+
+
+
+\subsection{Men"u-Definition\label{XGM}}
+Die XGraphic-Bibliothek erlaubt die Erstellung einer
+Menü-Leiste, die am oberen Rand des Fensters angezeigt
+wird.
+Die Menü-Leiste besteht aus Menüs, die nacheinander
+erstellt werden und in ihrer Erstellungsreihenfolge
+von links nach rechts im Fenster angezeigt werden.
+Klick man mit der Maus auf ein Menü, so werden die
+einzelnen Menü-Punkte sichtbar.
+Die Menü-Punkte werden in ihrer Erstellungsreihenfolge
+von oben nach unten angezeigt.
+Klick man auf einen Menü-Punkt, so wird der Callback
+des Menüs aufgerufen und bekommt als Parameter die
+Nummer des angeklickten Menü-Punkts übergeben.
+
+\subsubsection{\prochead{NewMenu}}
+\begin{commanddesc}
+\syntax{IntVar := XGM\_NewMenu (LabelString);}
+\param{Eine Zeichenkette (Men"u-Label).}
+\func{Einleiten der Definition eines neuen Men"us. Es wird ein Handle
+auf das Men"u zu\-r"uck\-ge\-liefert, mit dessen Hilfe sp"ater im Programm
+einzelne Men"u-Punkte deaktiviert und wieder aktiviert werden k"onnen.}
+\end{commanddesc}
+
+\subsubsection{\prochead{AppendItem}}
+\begin{commanddesc}
+\syntax{XGM\_AppendItem (MenuHandle, ItemString);}
+\param{Eine Zeichenkette sowie der Handle aus dem Aufruf von NewMenu.}
+\func{Ein Men"u-Punkt wird an das Men"u angeh"angt.}
+\end{commanddesc}
+
+\subsubsection{\prochead{CreateMenu}}
+\begin{commanddesc}
+\syntax{XGN\_CreateMenu (HMenuHandle, PROC(MenuCallbackProc));}
+\param{Addresse der Men"u-Callback-Funktion.
+Handle des Men"us.}
+\func{Diese Funktion schlie"st die Definition eines Men"us ab.
+Erst mit diesem Aufruf wird das Men"u wirklich erzeugt und in
+das Fenster eingebaut!}
+\end{commanddesc}
+
+\subsubsection{\prochead{SetItemActivity}}
+\begin{commanddesc}
+\syntax{XGM\_SetItemActivity (MenuHandle, ItemNumber, StatusFlag);}
+\param{"Ubergeben werden der Men"uhandle, die laufende Nummer
+des zu bearbeitenden Eintrags (Numerierung beginnt mit eins)
+sowie der neue Status (Bool'scher Wert, TRUE entspricht ausw"ahlbar,
+FALSE inaktiv).}
+\func{Mit SetItemActivity k"onnen einzelne Punkte von Men"us
+deaktiviert bzw.\ reaktiviert werden.}
+\end{commanddesc}
+
+
+
+\subsection{Fu"szeilen bearbeiten\label{XGF}}
+Am unteren Bildschirmrand können in einem eigenen Bereich
+einzeilige Zeichenketten ausgegeben werden.
+Die Zeichenketten schließen bündig mit dem äußeren
+Rand ab.
+Sind die Zeichenketten zusammen breiter als der Bereich,
+so überlappen sie in der Mitte.
+
+\subsubsection{\prochead{SetLeft}}
+\begin{commanddesc}
+\syntax{XGF\_SetLeft (StringConst);}
+\param{Eine Zeichenkette (anzuzeigender String).}
+\func{Der "ubergebene String wird in der linken Fu"szeile
+angezeigt und "uberschreibt damit den bisher dort angezeigten
+Text.}
+\end{commanddesc}
+
+\subsubsection{\prochead{SetRight}}
+\begin{commanddesc}
+\syntax{XGM\_SetRight (StringConst);}
+\param{Eine Zeichenkette (anzuzeigender String).}
+\func{Der "ubergebene String wird in der rechten Fu"szeile angezeigt und
+"uberschreibt damit den bisher dort angezeigten Text.}
+\end{commanddesc}
+
+\subsubsection{\prochead{SetDefault}}
+\begin{commanddesc}
+\syntax{XGM\_SetDefault();}
+\param{Keine.}
+\func{Der Text in den Fu"szeilen wird durch den Standard-Text ersetzt
+(Links: Copyright-Meldung; Rechts: Versions-Nummer).}
+\end{commanddesc}
+
+
+
+\subsection{Ein-/Ausgabe-Fenster\label{XGN}}
+Damit bei der Eingabe einer Zahl oder einer Zeichenkette nicht
+jeder einzelne Tastendruck von einem selbstprogrammierten
+Event-Handler bearbeitet werden muß, gibt es Hilfsfunktionen,
+die die bequemere Eingabe von Zahlen, Zeichenketten,
+Dateinamen und Ja/Nein-Entscheidungen erlauben.
+
+\subsubsection{\prochead{InputInt}}
+\begin{commanddesc}
+\syntax{XGN\_InputInt (PromptString, InitialValue,
+MinValue, MaxValue, NumberOfTicks);}
+\param{Eine Zeichenkette (Prompt), Vorgabewert, Untergrenze,
+Obergrenze, Anzahl Unterteilungen.}
+\func{Es wird ein Fenster angezeigt, in dem der Benutzer durch Verschieben
+des Sliders eine Zahl im angegebenen Bereich eingeben kann. Es werden
+keine Events generiert, bevor der Benutzer eine Zahl eingegeben hat.
+Das Fenster enth"alt zwei Buttons, die mit OK und CANCEL beschriftet
+sind. Egal welcher Button gedr"uckt wird, mit der Funktion GetLastInteger
+wird in jedem Fall der gew"ahlte Wert geliefert. Weitere Erl"auterungen
+unter der Funktion GetlastInteger.}
+\end{commanddesc}
+
+
+\subsubsection{\prochead{GetlastInteger}}
+\begin{commanddesc}
+\syntax{BoolVar := XGN\_GetLastInteger (IntVar);}
+\param{Eine INTEGER-Variable.}
+\func{Mit dieser Funktion kann der letzte eingegebene Wert erfragt werden.
+Der R"uckgabewert ist TRUE, wenn der Benutzer den OK-Button dr"uckte,
+FALSE sonst.}
+\end{commanddesc}
+
+\subsubsection{\prochead{InputString}}
+\begin{commanddesc}
+\syntax{XGN\_InputString (LabelString);}
+\param{Eine Zeichenkette (Prompt).}
+\func{Wie auch InputInt bringt InputString ein Fenster auf den Bildschirm, in
+dem der Benutzer einen Text eingeben kann. Die Generierung von Events
+ist blockiert, bis der Benutzer einen der beiden Buttons anklickt.}
+\end{commanddesc}
+
+\subsubsection{\prochead{GetLastString}}
+\begin{commanddesc}
+\syntax{BoolVar := XGN\_GetLastString (StringVar);}
+\param{Eine String-Variable.}
+\func{Wenn der Benutzer die Eingabe durch den Button OK abgeschlo"sen hat, so
+wird TRUE als R"uckgabewert geliefert. Wurde der CANCEL-Button
+angeklickt, so wird FALSE zur"uckgegeben und als Text wird "CANCELLED"
+geliefert.}
+\end{commanddesc}
+
+\subsubsection{\prochead{ShowNotice}}
+\begin{commanddesc}
+\syntax{XGN\_ShowNotice (StringConst);}
+\param{Eine Zeichenkette (Auszugebender Text).}
+\func{Die Ausf"uhrung des Programms wird solange angehalten, bis der Benutzer
+"uber den OK-Button die Anzeige quittiert hat. Der Text kann Newline-Zeichen
+(ASCII 13) enthalten, um einen Zeilenumbruch des Textes zu erzwingen.}
+\end{commanddesc}
+
+\subsubsection{\prochead{FileSelector}}
+\begin{commanddesc}
+\syntax{XGN\_FileSelector (MaskString);}
+\param{Eine Zeichenkette (regul"arer Ausdruck), die die
+anzuzeigenden Dateien angibt.}
+\func{Es wird eine Fileselector-Box auf den Bildschirm gebracht, die
+den Inhalt des aktuellen Verzeichnisses alphabetisch sortiert
+(Verzeichnisse vor Dateien) anzeigt.}
+\end{commanddesc}
+
+\subsubsection{\prochead{GetFileName}}
+\begin{commanddesc}
+\syntax{BoolVar := XGN\_GetFileName (StringVar);}
+\param{Eine Stringvariable.}
+\func{Wie auch bei GetLastInteger und GetLastString wird hier
+der zuletzt eingegebene Wert (Dateiname inkl. Pfad) sowie der
+gedr"uckte Button (TRUE entspricht OPEN) geliefert.}
+\end{commanddesc}
+
+\subsubsection{\prochead{YesOrNo}}
+\begin{commanddesc}
+\syntax{BoolVar := XGN\_YesOrNo (StringConst);}
+\param{Zeichenkette.}
+\func{Diese Funktion gibt eine Notice aus (siehe ShowNotice),
+die jedoch zwei Buttons enth"alt (YES und NO). TRUE wird geliefert,
+wenn YES gedr"uckt wurde, FALSE sonst.}
+\end{commanddesc}
+
+
+
+\subsection{Malfunktionen\label{XGD}}
+%
+% Hier koennten wir auch kurz etwas zum verwendeten Koordinatensystem
+% sagen. Wo liegt (0,0) und in welche Richtung zeigen steigende x bzw.
+% y Werte? Welches ist der maximale x bzw. y Wert?
+%
+Zwischen den Menüs und der Fußzeile liegt der Zeichenbereich.
+Hierin können Grafiken und Texte ausgegeben werden.
+Der Wertebereich der Koordinaten liegt zwischen $(0, 0)$
+und $(9999, 9999)$, der Ursprung liegt in der oberen linken Ecke.
+Die X-Koordinaten wachsen nach rechts, die Y-Koordinaten nach
+unten.
+Bei allen Funktionen wird zuerst die X-Koordinate angegeben.
+Die Farben sind als Aufz"ahlungstyp im Definitions-
+Modul abgelegt.
+
+\subsubsection{\prochead{NoClipping}}
+\begin{commanddesc}
+\syntax{XGD\_NoClipping;}
+\func{Schaltet das Clipping f"ur alle Malfunktionen auf Fensterdimension
+zur"uck. Die ist gleichzeitig auf \em{Voreinstellung}.}
+\end{commanddesc}
+
+\subsubsection{\prochead{SetClipping}}
+\begin{commanddesc}
+\syntax{XGD\_SetClipping (pointX, pointY, width, height);}
+\param{Die Koordinaten der oberen, linken Ecke des Clipping-Rechtecks
+sowie dessen Breite und H"ohe.}
+\func{Setzt das Clipping-Rechteck f"ur alle Malfunktionen.}
+\end{commanddesc}
+
+\subsubsection{\prochead{BeginPoly}}
+\begin{commanddesc}
+\syntax{XGD\_BeginPoly (MaxN);}
+\param{"Ubergeben wird die gew"unschte Maximalzahl von Polygonpunkten.}
+\func{Leitet die Definition eines zu malenden Polygons oder Linienzuges ein.}
+\end{commanddesc}
+
+\subsubsection{\prochead{AddPolyPoint}}
+\begin{commanddesc}
+\syntax{XGD\_AddPolyPoint (px, py);}
+\param{Die Koordinaten des neuen Polygonpunktes. Wenn mehr Aufrufe
+erfolgen, als Polygonpunkte bei BeginPoly angegeben waren, so werden
+die zus"atzlichen Punkte ignoriert. Um ein Polygon zu schliessen, wird
+{\em nicht} der Startpunkt nocheinmal als letzter Punkt angegeben!}
+\func{Anf"ugen eines Punktes an das mit BeginPoly eingeleitete Polygon.}
+\end{commanddesc}
+
+\subsubsection{\prochead{DrawPoly}}
+\begin{commanddesc}
+\syntax{XGD\_DrawPoly (Closed, Filled, Width, Color);}
+\param{Zwei Bool'sche Werte (Closed und Filled), die angeben, ob das
+Polygon geschlo"sen bzw. gef"ullt ist. Die Breite, in der die Linien
+gezeichnet werden sowie die Farbe.}
+\func{Schlie"st die Definition eines Polygons oder eines Linienzuges ab
+und malt ihn.  Wenn $Closed = \mbox{TRUE}$, so wird eine Linie vom
+letzten zum ersten Punkt gezeichnet. Wenn $Filled = \mbox{TRUE}$, so
+wird das Polygon in der angegebenen Farbe gef"ullt. Es wird dann
+nat"urlich auch geschlossen.}
+\end{commanddesc}
+
+\subsubsection{\prochead{DrawLine}}
+\begin{commanddesc}
+\syntax{XGD\_DrawLine (StartX, StartY, EndX, EndY, Breite, Farbe);}
+\param{F"unf ganze Zahlen (Anfangs- und Endkoordinaten, Liniendicke).
+Element von tColor (Farbe).}
+\func{Die Funktion zeichnet eine Linie vom Start- zum Endpunkt in der
+angegebenen Dicke und Farbe.}
+\end{commanddesc}
+
+\subsubsection{\prochead{DrawCircle}}
+\begin{commanddesc}
+\syntax{XGD\_DrawCircle (CenterX, CenterY, Radius, Filled, Color);}
+\param{Vier ganze Zahlen (Mittelpunkts-Koordinaten, Radius, Farbe).
+Ein Wahrheitswert, der angibt, ob der Kreis gef"ullft werden soll.}
+\func{Die Funktion zeichnet einen Kreis mit dem gew"unschten Radius um
+den angegebenen Mittelpunkt in der angegebenen Farbe. Wenn Filled TRUE
+ist, so wird der Kreis in der entsprechenden Farbe ausgef"ullt.}
+\end{commanddesc}
+
+\subsubsection{\prochead{DrawString}}
+\begin{commanddesc}
+\syntax{XGD\_DrawString (PosX, PosY, Text, Color);}
+\param{Zwei ganze Zahlen (Koordinaten), die Farbe und eine
+Zeichenkette.}
+\func{Die "ubergebene Zeichenkette wird in der angegebenen Farbe
+ausgegeben.  Die "ubergebenen Koordinaten bezeichnen die linke untere
+Ecke der Bounding Box!}
+\end{commanddesc}
+
+\subsubsection{\prochead{GetStringExtents}}
+\begin{commanddesc}
+\syntax{XGD\_GetStringExtents (Text, Breite, Hoehe);}
+\param{Ein String (Text), sowie zwei INTEGER-Variablen (Breite, Hoehe).}
+\func{In den INTEGER-Variablen werden die Abmessungen des Strings (in
+Pixeln) zur"uckgegeben.}
+\end{commanddesc}
+
+\subsubsection{\prochead{Clear}}
+\begin{commanddesc}
+\syntax{XGD\_Clear();}
+\param{Keine.}
+\func{Der Malbereich des Programmfensters wird gel"oscht.}
+\end{commanddesc}
+
+\subsubsection{\prochead{DrawArrowLine}}
+\begin{commanddesc}
+\syntax{XGD\_DrawArrowLine(StartX, StartY, EndX, EndY, Width, Color);}
+\param{Erl"auterungen siehe DrawLine.}
+\func{Es wird eine Linie zwischen den angegebenen Punkten gemalt. Bei
+60 Prozent der L"ange befindet sich eine Pfeilspitze.}
+\end{commanddesc}
+
+\subsubsection{\prochead{Flush}}
+\begin{commanddesc}
+\syntax{XGD\_Flush();}
+\param{Keine.}
+\func{Der Windowmanager wird gezwungen, ein Repaint durchzuf"uhren
+(wird ben"otigt, wenn \zB\  als Folge eines animierten Ablaufs eines
+Malvorgangs ein Repaint ben"otigt w"urde, jedoch nicht automatisch
+ausgef"uhrt wird.}
+\end{commanddesc}
+
+
+
+\subsection{Event-Behandlung\label{XGE}}
+Wenn die Maus geklickt oder eine Taste gedrückt wurde,
+ruft die Hauptschleife den Event-Handler auf.
+Dieser muß jetzt erfahren, welcher Art das Ereignis denn
+nun konkret war, wo die Maus positioniert war, als das
+Ereignis eingetreten ist, usw.
+
+\subsubsection{\prochead{Button\_L}}
+\begin{commanddesc}
+\syntax{BoolVar := XGE\_Button\_L();}
+\param{Keine.}
+\func{Diese Funktion gibt zur"uck, ob der Event durch die linke
+Maustaste ausgel"ost wurde (R"uckgabewert TRUE) oder nicht.}
+\end{commanddesc}
+
+\subsubsection{\prochead{Button\_M}}
+\begin{commanddesc}
+\syntax{BoolVar := XGE\_Button\_M();}
+\param{Keine.}
+\func{Diese Funktion arbeitet wie Button\_L, gibt jedoch an, ob die
+mittlere Maustaste den Event ausgel"ost hat.}
+\end{commanddesc}
+
+\subsubsection{\prochead{Button\_R}}
+\begin{commanddesc}
+\syntax{BoolVar := XGE\_Button\_R();}
+\param{Keine.}
+\func{Wie Button\_L, jedoch f"ur die rechte Maustaste.}
+\end{commanddesc}
+
+\subsubsection{\prochead{X\_Position}}
+\begin{commanddesc}
+\syntax{IntVar := XGE\_X\_Position();}
+\param{Keine.}
+\func{Die X-Koordinate der Maus zum Zeitpunkt des Eintretens des Events.}
+\end{commanddesc}
+
+\subsubsection{\prochead{Y\_Position}}
+\begin{commanddesc}
+\syntax{IntVar := XGE\_Y\_Position();}
+\param{Keine.}
+\func{Wie X\_Position, jedoch f"ur die Y-Koordinate.}
+\end{commanddesc}
+
+\subsubsection{\prochead{KeyCode}}
+\begin{commanddesc}
+\syntax{CharVar := XGE\_KeyCode();}
+\param{Keine.}
+\func{Als R"uckgabewert wird der ASCII-Code des Zeichens geliefert, das
+den aktuellen Event ausgel"ost hat, beziehungsweise das Null-Zeichen,
+wenn keine Taste f"ur den Event verantwortlich war.}
+\end{commanddesc}
+
+
+
+
+\section{Beispiele\label{Beispiel}}
+
+
+
+
+\subsection{Einfachstes Programm}
+
+\listing{simple.m2i}
+
+Dieses einfache Beispielprogramm bringt lediglich ein Fenster auf den
+Bildschirm, in dem nicht gemalt wird. Die Funktionen {\em Repaint} und
+{\em Event} sind leere Funktionen, die jedoch trotzdem vorhanden sein
+m"ussen. Durch den Befehl {\em PROC(Repaint)} wird erreicht, da"s an
+dieser Stelle nicht die Funktion Repaint aufgerufen, sondern nur ihre
+Addresse eingesetzt wird.  (Analog f"ur Event.)
+
+
+
+
+\subsection{Ein Gr"o"seres Beispiel}
+\listing{greatersample.m2i}
+
+In diesem Beispiel wird zus"atzlich ein Men"u eingef"ugt, das bei Auswahl des
+zweiten Men"u-Punktes eine Nachricht auf den Bildschirm bringt. Au"serdem
+reagiert das Programm auf Mausclicks innerhalb des Malbereichs (der gro"sen
+Fl"ache unterhalb der Men"uzeile), indem es um den Punkt, an dem die linke
+Maustaste gedr"uckt wurde, einen Kreis zeichnet.
+    
+%
+% Kurze Erklaerung zu diesem Beispiel
+%
+% erledigt - Alexander
+
+
+\section{Definitionsmodul}
+
+\listing{xgraphic.m2d}
+
+\end{document}

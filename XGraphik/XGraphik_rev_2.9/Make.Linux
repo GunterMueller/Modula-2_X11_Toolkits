@@ -1,0 +1,18 @@
+# Linux-spezifische Einstellungen
+# - Name des Mocka-Compilers
+# - Name des GPM-Compilers
+# - Pfad zu selbigem
+# - Name des C-Compilers
+# - Name des Modula-Praeprozessors
+# - Compilerflags fuer C-Compiler
+
+MOCKA =	mocka
+GPM =	gpm
+CC =	gcc -m32
+MPP =	m2pp
+gpmdir =	/usr/soft/main/gpm
+
+CFLAGS = -g -Wall
+
+CXGRAPHICSLIBS =	-lc -lX11 -L/usr/openwin/lib -lxview -lolgx
+

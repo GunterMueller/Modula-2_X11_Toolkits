@@ -1,0 +1,18 @@
+Sopra 96/97	Studentendiskette	README
+
+Inhalt:
+
+README		Diese Datei
+mocka.tgz	Archiv fuer den MOCKA-Compiler.
+nsgmls.tgz	Archiv mit nsgmls und spam. Enthaelt Installations-Skript.
+xgraphic.tgz	Archiv der XGraphic-Library.
+sgml.tgz	Hilfsdateien fuer nsgmls.
+link		Neues Link-Script fuer Mocka, um X Libraries hinzuzubinden.
+m2pp		Modula-2-Praeprozessor, wird fuer XGraphic benoetigt.
+eprintf.o	Objectfile mit der Funktion eprintf, wird fuer die Mocka-
+		-Version der Library benoetigt, um uebersetzen zu koennen.
+formatter.gz	Der gepackte Formattierer (Siehe Aufgabenstellung!)
+xg_inst.dvi 	Installationsanleitung, fuer XDVI
+xg_inst.txt	Dito, als ASCII
+XGraphicuse.dvi	Referenzmanual zu XGraphic
+isofiles.tar	enthaelt iso_8859_1, wird fuer den Formattierer benoetigt.

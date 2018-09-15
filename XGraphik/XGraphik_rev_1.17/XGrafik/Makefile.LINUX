@@ -53,6 +53,7 @@ XGraphic.o:	Intern_lib.d XGraphic.d XGraphic.mod
 Intern_lib.o:	Draw.o Filebrowser.o InputIntStr.o Haupt.o Menues.o\
 		XGraphic.xbm ordner.linux.xbm
 	ld -m elf_i386  -r -o Intern_lib.o Draw.o Filebrowser.o InputIntStr.o Menues.o Haupt.o
+	rm -rf ./m2bin/
 	mkdir ./m2bin/
 	cp Intern_lib.o ./m2bin/
 

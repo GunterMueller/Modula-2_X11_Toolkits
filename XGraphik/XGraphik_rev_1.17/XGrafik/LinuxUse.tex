@@ -1,0 +1,162 @@
+\documentstyle[german,din-a4,time]{article}
+
+%
+% Hinter einem Prozentzeichen stehen Kommentare. Manchmal
+% ist das ganz hilfreich. Der Text darf in dieser Datei uebrigens fast
+% beliebig formatiert stehen, d.h. man darf einruecken, um die
+% Lesbarkeit zu verbessern.
+%
+
+% Unter Linux hat Latex Probleme mit direkt eingegebenen Umlauten
+% Fuer ae gibt man: "a ein
+%      oe           "o
+%      ue           "u
+%      szett        "s
+
+%
+% Hier wird die Programmierbarkeit von LaTex benutzt. Es werden neue
+% Kommandos definiert. (Alle haben einen Parameter)
+%
+\newcommand{\taste}[1]{[#1]}
+\newcommand{\prog}[1]{{\bf #1}}
+\newcommand{\eing}[1]{{\tt #1}}
+\newcommand{\datei}[1]{{\tt #1}}
+
+\begin{document}
+
+
+\title{Wichtige Tips zum Umgang mit LINUX}
+\author{Michael Fischer und Alexander Schölling}
+\date{April 1994}
+% \date{\today\ \thetime }
+\maketitle
+
+
+
+
+
+%
+% Hier faengt ein Abschnitt an.
+% Unterabschnitte heissen dann
+% \subsection, \subsubsection, \paragraph, \subparagraph
+%
+\section{Einleitung}
+Ein Rechner unter dem Betriebssystem LINUX wird anders benutzt und
+bedient als ein Rechner unter DOS. Dieses Dokument ist ein Ausschnitt
+aus der Installationsanleitung für die Studenten, die LINUX auf Ihrem
+eigenen PC installieren wollen. Es enthält aber auch einige Informationen,
+die für Studenten mit einem vorinstallierten Rechner wichtig sind. Lesen Sie
+daher dieses Dokument sorgfältig, bevor Sie mit LINUX das
+erste Mal arbeiten.
+%
+% Zwischen zwei Absaetze (Abschnitte) des Textes muss man eine Leerzeile
+% eingeben, damit TeX erkennt, dass ein neuer Absatz beginnt.
+% Es duerfen auch mehrere Leerzeilen sein, das ist egal
+%
+
+
+
+
+\section{Einschalten des Rechners}
+Nach dem Einschalten des Rechners wird automatisch der Linux Bootmanager
+gestartet.
+Es erscheint nun ein Prompt, an dem man durch Drücken der
+%
+% hier wird die neue Funktion aufgerufen
+%
+\taste{Tab}-Taste eine Liste der verfügbaren Betriebssysteme erhält. 
+Um LINUX zu booten, gibt man an dieser Stelle \eing{linux} \taste{Return}
+ein oder drückt nur die \taste{Return}-Taste. Um MSDOS zu booten, gibt man 
+\eing{msdos} ein und drückt \taste{Return}.
+
+Außerdem können Sie den Rechner natürlich auch von einer Diskette booten.
+Sie haben zusammen mit dem PC auch eine 5,25 Zoll Diskette bekommen.
+Wenn Sie diese Bootdiskette beim Einschalten des Rechners in Laufwerk
+A: legen, starten Sie auch das LINUX-System.
+
+
+
+
+\section{Das Anmelden}
+
+
+\subsection{Ihre Benuternummer}
+Auf Ihrem PC ist bereits ein Benutzer für Sie eingerichtet. Wenn Sie sich
+anmelden, müssen Sie als Login Ihren Nachnamen eingeben. Das Passwort
+ist wieder Ihr Nachname. Normalerweise werden Sie unter dieser
+Benutzerkennung arbeiten. Sie können so keinen Schaden im System anrichten.
+
+Beachten Sie, daß unter UNIX in der Regel zwischen Groß- und Kleinschrift
+unterschieden wird! Außerdem wird das Passwort, während Sie es eintippen,
+%
+% will man Woerter oder Satzteile hervorheben, so werden diese mit
+% geschweiften Klammern umschlossen und darin steht das Kommando \em
+%
+{\em nicht} auf dem Bildschirm angezeigt.
+
+Sie können jetzt Kommandos eingeben und z.B. durch Eingabe von
+\eing{startx} das X-Window System starten.
+
+
+
+\section{Kopieren der LINUX Bootdiskette}
+Der nächste Schritt besteht nun darin, eine Kopie Ihrer Bootdiskette
+anzufertigen. Dazu ist es notwendig, zuerst den Inhalt der Bootdiskette 
+auf die Festplatte zu kopieren. Zu diesem Zweck geben Sie das folgende 
+Kommando ein:
+
+%
+% Alles zwischen begin{verbatim} und end{verbatim} wird im Zeichensatz
+% Courir (Schreibmaschine) genauso gedruckt, wie es in der Datei steht.
+%
+\begin{verbatim}
+darkstar:~# dd if=/dev/fd0 of=bootdisk
+\end{verbatim}
+
+Diese Eingabe kopiert alle Daten der Diskette in Ihrem Bootlaufwerk 
+in ein File mit dem Namen \datei{bootdisk}. Dies dauert ein oder 
+zwei Minuten. Danach nehmen Sie Ihre Bootdisk aus dem Bootlaufwerk 
+heraus und legen eine andere formatierte Diskette in das Bootlaufwerk ein.
+Um das File mit dem Inhalt Ihrer Bootdiskette auf die neue Diskette 
+zu kopieren, geben Sie folgendes Kommando ein:
+
+%
+% Aufzaehlungen werden mit begin{itemize} und end{itemize} eingeklammert.
+% Die Punkte der Aufzaehlung werden mit dem Kommando item eingeleitet.
+% Ein Item darf aus mehreren Paragraphen bestehen.
+% Ein Item darf wiederum eine Aufzaehlung enthalten
+%
+\begin{itemize}
+\item Melden Sie sich zuerst ab.
+\item Melden Sie sich dann als User root an.
+\item geben Sie das Kommando \eing{halt} ein.
+\item warten Sie bis die Meldung:
+\end{itemize}
+
+
+
+\section{Die Online-Hilfestellung}
+LINUX stellt für alle Befehle eine Kurzbedienungsanleitung bereit, die sog. man-Page. Sie
+können diese Kurzanleitungen jederzeit mit dem Kommando \prog{man} aufrufen. Sie
+können z.B. Hilfestellung zum \prog{man}-Kommando bekommen, indem Sie
+\eing{man man} eingeben.
+
+Die man-Pages sind übrigens ins Deutsche übersetzt worden und im LINUX-Anwenderhandbuch
+abgedruckt. 
+
+Welche Kommandos unter einem UNIX-System verfügbar sind entnehmen Sie bitte der
+Literatur über UNIX. Falls ein Kommando aus der Literatur nicht so arbeitet wie
+dort beschrieben, so sehen Sie in den man pages nach wie dieses Kommando in unserem
+System arbeitet.
+
+Ansonsten können Sie auch mit dem Autor dieses Textes in Verbindung treten und
+Ihre Fragen direkt stellen. Auch bei allen Problemen oder Abweichungen zu unserer
+Anleitung sollten Sie sich bei uns melden. Sehr häufig können Sie die Lösung
+aber auch selbst herausbekommen, indem Sie die Anleitungen aufmerksam durchlesen.
+%
+% Als Anfuehrungszeichen verwendet man zweimal das einfache Anfuehrungszeichen
+%
+In der Praxis ist das der ''normale'' Weg.
+
+
+\end{document}

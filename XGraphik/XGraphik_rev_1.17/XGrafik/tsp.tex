@@ -1,0 +1,41 @@
+\setlength{\unitlength}{0.006250in}%
+%
+\begingroup\makeatletter
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\endgroup
+\begin{picture}(562,293)(169,449)
+\thicklines
+\put(567,602){\line( 5,-2){152.931}}
+\put(199,710){\line( 4,-5){123.122}}
+\put(322,556){\line( 1, 0){176}}
+\put(498,556){\line( 3, 2){ 69}}
+\put(567,602){\line( 1, 2){ 67}}
+\put(500,556){\line( 2,-3){ 60.769}}
+\multiput(324,562)(-3.76471,4.67647){35}{\makebox(0.8889,1.3333){\SetFigFont{10}{12}{rm}.}}
+\multiput(196,721)(-0.65854,-5.97561){42}{\makebox(0.8889,1.3333){\SetFigFont{10}{12}{rm}.}}
+\multiput(169,476)(5.83929,1.33929){57}{\makebox(0.8889,1.3333){\SetFigFont{10}{12}{rm}.}}
+\multiput(496,551)(3.28571,-4.85714){22}{\makebox(0.8889,1.3333){\SetFigFont{10}{12}{rm}.}}
+\multiput(565,449)(0.08000,5.92000){26}{\makebox(0.8889,1.3333){\SetFigFont{10}{12}{rm}.}}
+\multiput(567,597)(5.65517,-2.24138){30}{\makebox(0.8889,1.3333){\SetFigFont{10}{12}{rm}.}}
+\multiput(731,532)(-2.50000,5.52632){39}{\makebox(0.8889,1.3333){\SetFigFont{10}{12}{rm}.}}
+\multiput(636,742)(-5.20000,-3.00000){61}{\makebox(0.8889,1.3333){\SetFigFont{10}{12}{rm}.}}
+\put(323,556){\line(-2,-1){149.200}}
+\end{picture}

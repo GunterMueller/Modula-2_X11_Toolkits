@@ -1,0 +1,101 @@
+Installation der XGraphic-Library, des SGML-Parser sowie des MOCKA-Compilers
+
+
+Alexander Schoelling, 31.10.1996
+
+
+
+Vorbemerkung:
+-------------
+Bei allen Befehlen muessen die umschliessenden Hochkommata (') wegge-
+lassen werden; umgekehrte Hochkommata (`) in Befehlen muessen hingegen
+mit eingegeben werden!
+
+Wenn Sie mit den Befehlen 'mc' oder 'mocka' den Compiler aufrufen koennen
+und dabei die Meldung 'MOCKA 9605' erhalten, so koennen Sie den Abschnitt
+0 - Installation von Mocka - ueberspringen. Gleiches gilt natuerlich auch,
+wenn Sie das Praktikum in C++ durchfuehren wollen.
+
+Schritt fuer Schritt:
+---------------------
+Vergewissern Sie sich bitte vor jedem Befehl, dass Sie ihn auch richtig
+eingegeben haben; Sie werden die Installation als Superuser (root) durch-
+fuehren und koennen sich daher mit Schreibfehlern Ihre Linuxinstallation
+zerstoeren!
+
+Wenn Sie nicht als Superuser 'root' angemeldet sind, so melden Sie sich
+jetzt ab und als root wieder an. Dann fuehren Sie bitte die folgenden
+Schritte aus (fuer <EDITOR> koennen Sie Ihren bevorzugten Editor verwen-
+den):
+
+
+Abschnitt 0 - Vorbereitungen:
+-----------------------------
+1) Diskette einlegen
+2) Wechsel nach /tmp: 'cd /tmp'
+3) Anlegen eines Hilfsverzeichnisses: 'mkdir sopra'
+4) Wechsel dorthin: 'cd sopra'
+5) Kopieren der Diskette: 'mcopy a:* .' (oder 'mcopy b:* .', wenn die
+   Diskette in Laufwerk B: ist)
+
+Abschnitt 1 - Installation des Compilers:
+-----------------------------------------
+1) Evtl. vorhandene alte Version loeschen:
+   a) Feststellen des Mocka-Verzeichnisses: 'cat `which mocka`' bzw.
+                                            'cat `which mc`'
+      (Letzteres nur, wenn mit 'mc' nicht der Midnight-Commander auf-
+      gerufen wird!) Als Ausgabe kommt dann z.B.: MOCKADIR=/usr/local/mocka.
+   b) Wenn mit 'mc' der Mocka-Compiler aufgerufen wird: 'rm `which mc`'
+   c) Wenn mit 'mocka' der Mocka-Compiler aufgerufen wird: 'rm `which mocka`'
+   d) Entfernen der uebrigen MOCKA-Dateien: 'rm -rf /usr/local/mocka'
+2) Wechsel nach /usr/local: 'cd /usr/local'
+3) Entpacken des Archivs: 'tar -xzf /tmp/sopra/MOCKA.TGZ'
+4) Installieren:
+   a) Wechsel nach mocka: 'cd mocka'
+   b) Installation: 'make install'
+   c) Wechsel nach /usr/local/bin: 'cd /usr/local/bin'
+   d) Wenn mit 'mc' der MidnightCommander aufgerufen wird:
+          'mv mc mocka'
+      sonst:
+          'ln -s mc mocka'
+
+Abschnitt 2 - Installation von XGraphic:
+----------------------------------------
+1) Wechsel nach /tmp/sopra: 'cd /tmp/sopra'
+2) Kopieren des Modula2-Praeprozessors: 'cp M2pp /usr/local/bin/m2pp'
+3) Korrigieren der Zugriffsrechte: 'chmod a+x /usr/local/bin/m2pp'
+4) Kopieren des neuen Linkscriptes: 'cp LINK /usr/local/mocka/sys/link'
+5) Kopieren von EPRINTF.O: 'cp EPRINTF.O /usr/local/mocka/lib/eprintf.o'
+6) Setzen der Umgebungsvariablen OSNAME: 'export OSNAME=Linux'
+7) Entpacken des Archivs: 'tar xzf XGRAPHIC.TGZ'
+8) Uebersetzen und installieren:
+   a) Fuer C++: 'make cinstall'
+   b) Fuer MOCKA: 'make mockainstall'
+
+Abschnitt 3 - Installation von NSGMLS:
+--------------------------------------
+1) Entpacken der Programme: 'tar xzf NSGMLS.TGZ'
+2) installation: './instsgml.sh'
+3) Wechsel nach /usr/local: 'cd /usr/local'
+4) Anlegen des Katalogverzeichnisses: 'mkdir sgml'
+5) Wechsel dorthin: 'cd sgml'
+6) Entpacken des Archivs: 'tar xzf /tmp/sopra/SGML.TGZ'
+7) Wechsel nach /etc: 'cd /etc'
+8) Anpassung von profile: '<EDITOR> profile'
+9) Folgende Zeilen aufnehmen:
+   a) export SGML_SEARCH_PATH=/usr/local/sgml
+   b) export SGML_CATALOG_FILES=/usr/local/sgml/catalog
+   c) export OSNAME=Linux
+0) Aufraeumen: 'rm -rf /tmp/sopra'
+
+
+Abschnitt 4 - Probleme mit Zeichensatz:
+=======================================
+Wenn Sie mit XGraphic erzeugte Programme nicht ausfuehren koennen, da
+der Font 'courier' nicht gefunden wird, so muessen Sie in
+'/usr/X11R6/lib/X11/fonts/Type1' eine Datei fonts.alias anlegen, die
+folgende Zeile enthaelt:
+'courier -adobe-courier-medium-r-normal-0-0-0-0-m-0-iso8859-1'
+
+
+

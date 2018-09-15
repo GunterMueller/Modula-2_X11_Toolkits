@@ -1,12 +1,17 @@
 
-A Modula-2 Library for XVIew. Forked from ftp://ftp.fernuni-hagen.de/pub/fachb/inf/pri6/Sopra95-96/
+A Modula-2 Library for XVIew. 
 
 Former XGrafik Libraries from Software Praticum from the Department of Computer Science - Fernuniversitaet Hagen
 
+a) For XGraphik_rev_1.17 forked from :
 URL ftp://ftp.fernuni-hagen.de/pub/fachb/inf/pri6/Sopra95-96/ 
 
+b) For XGraphik_rev_2.9 forked from :
+URL ftp://ftp.fernuni-hagen.de/pub/fachb/inf/pri6/Sopra96-97/ 
+
 This instructions are for a Ubuntu based system, like Mint Linux
-a) Install the XView and XView-Def packages:
+First install
+a) Install the i386 XView and XView-Def packages:
 apt-get install xviewg:i386
 apt-get install xviewg-dev:i386 
 

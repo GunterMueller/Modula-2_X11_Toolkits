@@ -1,0 +1,184 @@
+\documentstyle[german,din-a4,time]{article}
+\parindent0pt
+\parskip0.2\baselineskip
+
+%
+% In der endgueltigen Version den Header auskommentieren!
+%
+%\pagestyle{myheadings}
+%\markright{Installationsanleitung \today\ \thetime}
+
+\newcommand{\taste}[1]{[#1]}
+\newcommand{\prog}[1]{{\bf #1}}
+\newcommand{\eing}[1]{{\tt #1}}
+\newcommand{\datei}[1]{{\tt #1}}
+
+\begin{document}
+
+
+\title{Installationsanleitung der LINUX-Version PROPRA\\
+für Herrn Leckebusch}
+\author{Alexander Schölling, Stefan Wohlfeil}
+\date{April 1994}
+% \date{\today\ \thetime }
+\maketitle
+
+\section{Einleitung}
+Dieser Text ist ein Auszug aus einem Text, den wir für die Studenten,
+die zu Hause selbst LINUX installieren wollen, geschrieben haben. Da
+wir den Studenten einige Sachen empfehlen, die wir auf den Leih-PCs nicht
+machen wollen, sind einige Schritte von uns noch nicht ausprobiert worden.
+
+Wenn es daher Probleme geben sollte, wenden Sie sich bitte direkt an
+mich (Tel.: 4371). Ansonsten viel Spaß...
+
+\section{Installation von LINUX auf Rechenzentrum PCs}
+Vor Beginn der Installation eine leere, formatierte 5.25''-Diskette
+bereithalten.
+Bei der Installation sollen die folgenden Schritte durchgeführt werden:
+\begin{itemize}
+\item Löschen aller alten Partitionen Ihrer Festplatte. (Mit dem 
+	DOS-Programm \prog{fdisk})
+\item Anlegen einer neuen, kleinen MS-DOS Partition. (Mit dem 
+	DOS-Programm \prog{fdisk})
+\item Anlegen einer neuen SWAP Partition\footnote{
+In dieser Partition lagert das Betriebssystem Teile des Hauptspeichers aus,
+die gerade nicht benötigt werden.} für LINUX. (Mit dem 
+	LINUX-Programm \prog{fdisk})
+\item Anlegen einer neuen, großen LINUX Partition. (Mit dem 
+	LINUX-Programm \prog{fdisk})
+\item Installation von LINUX auf der LINUX Partition.
+\item Installation des LILO Bootmanagers
+\end{itemize}
+
+
+\section{Löschen und einrichten der DOS-Partition}
+
+Da wir nicht aus noch Drucker unter LINUX unterstützen wollen, soll eine
+kleine DOS-Partition auf der Platte bleiben. Wir dachten an eine Größe
+von 50 MB. Wir installieren dort nur das Betriebssystem, damit die
+Studenten Dateien unter DOS drucken können.
+
+Platte dann formatieren (\eing{format /s c:}) und die paar DOS Dateien
+auf die Platte kopieren.
+
+
+\section{Installation von LINUX}
+
+Der Rechner wird von unserer LINUX Bootdiskette gebootet.
+Danach erscheint auf dem Bildschirm folgende Meldung:
+
+\begin{verbatim}
+Please remove the boot Kernel disk from your floppy drive,
+insert a disk to be loaded into the ramdisk, and press
+[enter] to continue.
+\end{verbatim}
+
+Jetzt Diskette {\bf color 144} in Laufwerk B: legen.
+
+Nachdem der Rechner jetzt läuft, kann man sich ohne Passwort als
+\eing{root} anmelden und die Platte weiter Partitionieren.
+Als erstes sollte die Tastatur auf \eing{German} umgestellt werden. Dazu den
+folgenden Befehl eingeben:
+
+\begin{verbatim}
+# cd /usr/lib/kbd/keytables
+# gzip -d <gr-lat1.map.gz | loadkeys
+\end{verbatim}
+
+Als nächstes wird \eing{fdisk} gestartet. Damit soll dann eine
+16 MB große SWAP-Partition angelegt werden. (Der Id-Code der
+SWAP-Partition muß extra gesetzt werden!) Der Rest der Platte
+soll dann zur Partition fürs LINUX Dateisystem werden.
+
+ 
+
+\section{Die Installation von LINUX}
+
+Dazu benutzen wir das Programm \eing{setup}. Als erstes wird unter
+der Option KEYMAP die deutsche Tastatur eingestellt.
+Dazu wird folgende Zeile: \eing{/usr/lib/kbd/keytables/gr-lat1.map.gz}
+ausgewählt.
+
+Danach will \prog{setup} die SWAP-Partition installieren. Das führen wir
+durch. Danach wird \prog{mkswap} und \prog{swapon} durchgeführt.
+
+Wir setzten dann die eigentliche Installation von Diskette fort.
+Es wird auf der LINUX-Partition installiert, und dort wird als erstes
+ein \eing{ext2} filesystem installiert. Danach wird die LINUX-Partition 
+formatiert.
+
+Die DOS-Partition soll unter dem Namen \eing{/dosc} angesprochen werden
+können.
+
+Für das Praktikum werden folgende Diskettensätze installiert:
+
+\begin{verbatim}
+  | |    [X] CUS  Also prompt for CUSTOM disk sets                        | |
+  | |    [X] A    Base Linux system                                       | |
+  | |    [X] AP   Various Applications that do not need X                 | |
+  | |    [X] D    Program Development (C, C++, Lisp, Perl, etc.)          | |
+  | |    [ ] E    GNU Emacs                                               | |
+  | |    [ ] F    FAQ lists, HOWTO documentation                          | |
+  | |    [ ] I    Info files readable with info or Emacs                  | |
+  | |    [ ] IV   InterViews Development + Doc and Idraw Apps for X       | |
+  | |    [ ] N    Networking (TCP/IP, UUCP, Mail, News)                   | |
+  | |    [ ] OI   ObjectBuilder for X                                     | |
+  | |    [ ] OOP  Object Oriented Programming (GNU Smalltalk 1.1.1)       | |
+  | |    [ ] Q    Replacement Linux kernels with special drivers          | |
+  | |    [ ] T    TeX                                                     | |
+  | |    [ ] TCL  Tcl/Tk/TclX, Tcl language, and Tk toolkit for X         | |
+  | |    [X] X    Base XFree-86 2.0 X Window System                       | |
+  | |    [X] XAP  X Applications                                          | |
+  | |    [X] XD   XFree-86 2.0 X11 Program Development System             | |
+  | |    [X] XV   XView 3.2 release 5. (OpenLook Window Manager, apps)    | |
+  | |    [ ] Y    Games (that do not require X)                           | |
+\end{verbatim}
+
+Unsere Custom Disketten heißen \eing{feu}. Die weiteren Einstellungen
+(time zone, Maus, CD-ROM, ...) dürften klar sein.
+
+Da wir den Studenten, die auf Ihrem Heim-PC LINUX installieren,
+empfehlen LINUX von Diskette zu booten, habe ich keine Erfahrung,
+wie man LILO direkt mit dem \prog{setup}-Programm installiert.
+Aber das sollte eingentlich aus der Benutzerführung von
+\prog{setup} hervorgehen. Neben LILO sollten wir trotzdem eine
+Bootdiskette mit LINUX für den Notfall erstellen. Ich hoffe, daß
+das Rechenzentrum auch dafür noch ein paar 5,25'' Disketten übrig
+hat. Siehe Abschnitt 7!
+
+Das \prog{selection}-Programm brauchen wir nicht, es wird also 
+nicht installiert.
+
+Nachdem die Installation soweit abgeschlossen ist, wird der Rechner neu
+gebootet, und zwar mit der gerade erstellten Bootdiskette.
+
+
+
+\section{Einrichten eines Benutzers}
+Für den Studenten soll gleich ein Benutzer eingerichtet werden.
+Benutzernummer, sowie Passwort soll der Nachname des Studenten sein.
+
+Group-ID und User-ID sind egal und können von \prog{adduser} selbst
+bestimmt werden. Das Home-Directory soll wie vorgeschlagen unter
+\eing{/home/Nachname} stehen. Die Default-Shell soll die \eing{bash} sein.
+
+\section{Konfiguration von LILO}
+Um später wahlweise Linux oder MS-Dos booten zu können, muß nun noch die Datei
+\prog{/etc/lilo.conf} editiert werden.
+
+Die Datei sollte danach folgenden Inhalt haben:
+\begin{verbatim}
+boot = /dev/hda
+vga = normal
+ramdisk = 0
+prompt
+root = /dev/hda3
+image = /vmlinuz
+label = linux
+other = /dev/hda1
+label = msdos
+\end{verbatim}
+
+Nach Abschluß der Änderungen nochmals \eing{lilo} aufrufen.
+\end{document}

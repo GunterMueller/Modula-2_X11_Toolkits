@@ -1,0 +1,9 @@
+
+Das voreingestellte link-Skript von mocka bindet nicht automatisch
+die X11 und XView libraries zu einem Programm hinzu. Deshalb kann
+das Testprogramm graftest nicht ohne Fehlermeldungen der Art:
+Unresolved references, bzw. undefined symbol erzeugt werden.
+
+Das Skript link2 ist eine veraenderte Version des Skripts, die
+unter anderem auch die jeweiligen X11 libraries zu jedem Programm
+hinzulinkt.

@@ -1,0 +1,92 @@
+# Allgemeine Variablen einbinden
+include Make.src
+
+# Systemabhaengige Variablen einlesen
+include Make.$(OSNAME)
+
+INSTALLFILES =	xgraphic.o intern_lib.o xgraphic.md xgraphic.d xgraphic.r\
+		intern_lib.d intern_lib.r
+
+.SUFFIXES:	.m2d .md .m2i .mi
+
+all:	xgraphic.o graftest simple greatersample
+
+.m2d.md:
+	$(MPP) $(PPDEBUG) mocka $*.m2d >$*.def
+
+.m2i.mi:
+	$(MPP) $(PPDEBUG) mocka $*.m2i >$*.mod
+
+.c.o:
+	$(CC) $(CFLAGS) -c $*.c
+
+xgraphic.o:	intern_lib.d xgraphic.d xgraphic.mi
+	$(MOCKA) -c xgraphic
+
+xgraphic.d:	xgraphic.md xgraphic.mi intern_lib.d
+	$(MOCKA) -s xgraphic
+
+intern_lib.d:	intern_lib.md intern_lib.o
+	$(MOCKA) -s intern_lib
+
+intern_lib.o:	$(INTERNOBJECTS)
+	ld  -m elf_i386 -r -o intern_lib.o $(INTERNOBJECTS)
+	rm -rf ./m2bin/
+	mkdir ./m2bin/
+	cp ./intern_lib.o ./m2bin/
+	
+	
+
+Draw.o:		Draw.c Intern.h
+
+Filebrowser.o:	Filebrowser.c Intern.h
+
+Haupt.o:	Haupt.c Intern.h Menues.h
+
+InputIntStr.o:	InputIntStr.c Intern.h
+
+Menues.o:	Menues.c Intern.h Menues.h
+
+xgraphic.md:	xgraphic.m2d
+
+xgraphic.mi:	xgraphic.m2i
+
+intern_lib.md:	intern_lib.m2d
+
+# --- Ende der Library, es folgen Beispielprogramme
+
+graftest:	graftest.o xgraphic.o intern_lib.o
+	$(MOCKA) -p graftest 
+
+graftest.o:	graftest.mi xgraphic.d intern_lib.d
+	$(MOCKA) -c graftest
+
+graftest.mi:	graftest.m2i
+
+simple:		simple.o xgraphic.o intern_lib.o
+	$(MOCKA) -p simple
+
+simple.o:	simple.mi xgraphic.d intern_lib.d
+	$(MOCKA) -c simple
+
+simple.mi:	simple.m2i
+
+greatersample.mi:	greatersample.m2i
+
+greatersample.o:	greatersample.mi xgraphic.d intern_lib.d
+	$(MOCKA) -c greatersample
+
+greatersample:		greatersample.o xgraphic.o intern_lib.o
+	$(MOCKA) -p greatersample
+
+# --- Sonstige Targets fuer Make
+clean:
+	rm -f *.o core *.d *.r *_errors
+	rm -f graftest simple
+	rm -f *.md *.mi
+
+install_pri6:	xgraphic.o intern_lib.o
+	install -m 0664 $(INSTALLFILES) /usr/soft/main/mocka/lib
+
+install:	xgraphic.o intern_lib.o
+	install -m 0664 $(INSTALLFILES) /usr/local/mocka/lib

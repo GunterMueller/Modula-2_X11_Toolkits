@@ -1,0 +1,9 @@
+MOCKA =		mc
+CC =		gcc
+MPP =		m2pp
+CPP =		g++
+GPM =		echo 'Fehler'
+
+OPENWININCLUDES = 	-I/usr/openwin/include
+CXGRAPHICSLIBS = 	-lc -lX11 -L/usr/openwin/lib -lxview -lolgx
+CFLAGS = 	-g $(OPENWININCLUDES) -DSOLARIS

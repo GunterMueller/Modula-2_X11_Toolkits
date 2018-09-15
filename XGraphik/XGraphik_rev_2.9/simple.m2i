@@ -1,0 +1,29 @@
+
+MODULE simple;
+ 
+FROM Arguments IMPORT GetArgs, ArgTable;
+ 
+FROM xgraphic IMPORT XG_Init, XG_StartMainLoop;
+ 
+PROCEDURE Event() : BOOLEAN;
+BEGIN
+(* Hier wuerden normalerweise Events aufgeschluesselt und die
+   entsprechenden Aktionen eingeleitet. *)
+    RETURN FALSE;
+END Event;
+ 
+PROCEDURE Repaint();
+BEGIN
+(* Normalerweise wuerde hier der Fensterinhalt neu gemalt *)
+END Repaint;
+ 
+VAR Anz : SHORTCARD; (* Hier merken wir uns die Anzahl der Kommandozeilen-
+                       Parameter *)
+    Args : ArgTable; (* Und hier die Parameter *)
+ 
+BEGIN
+    GetArgs (Anz, Args);
+    (* Holen der Parameter *)
+    XG_Init (Anz, Args, PROC(Repaint), PROC(Event));
+    XG_StartMainLoop();
+END simple.

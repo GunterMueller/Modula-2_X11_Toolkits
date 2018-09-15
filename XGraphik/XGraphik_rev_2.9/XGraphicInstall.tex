@@ -1,0 +1,124 @@
+\documentstyle[german,din-a4,listing,abkuerzungen]{article}
+%\makeindex
+\pagestyle{headings}
+
+\title{Installation der XGraphic-Bibliothek}
+\author{Alexander Sch"olling \and
+Stefan Wohlfeil}
+
+\begin{document}
+% Auf das Inhaltsverzeichnis verzichten wir besser.
+% 15.3 Stefan
+% \tableofcontents
+% \pagebreak
+\maketitle
+
+\newcommand{\prochead}[1]{{{#1}\index{#1}}}
+\newcommand{\syntax}[1]{\item[Syntax:] {\tt #1}}
+\newcommand{\param}[1]{\item[Parameter:] {#1}}
+\newcommand{\func}[1]{\item[Funktionalit"at:] {#1}}
+\newenvironment{commanddesc}{%
+	\begin{description}
+}{%
+	\end{description}
+}
+
+
+\section{Systemanforderungen}
+
+\subsection{Hardware}
+Um XGraphic benutzen zu k"onnen, ben"otigen Sie ein lauff"ahiges
+Linux-System mit konfiguriertem X-Server. Auf der Linux-Partition
+m"ussen noch ca. 2.5 - 3 MB f"ur den Compiler (falls noch nicht
+vorhanden) sowie ca. 4 MB f"ur die Library frei sein.
+
+\subsection{Software}
+Verwenden k"onnen Sie Linux Kernel Versionen ab 0.99.13 mit XFree86
+ab Version 2.0. Diese Konfiguration wurde allerdings von uns nicht
+mit der neuesten XGraphic-Version getestet, bei uns l"auft Kernel
+1.2.13 mit XFree86 3.1.2. Wir verwenden die MOCKA-Compilerversion 9502
+und GCC Version 2.7.2.
+
+
+\section{Installation}
+
+\subsection{Allgemeines}
+Da sich die Installationsprogramme der zur Zeit gebr"auchlichen
+Linuxdistributionen so weit unterscheiden und wir nicht alles testen
+k"onnen, mu"s die Installation der Library von Hand ausgef"uhrt werden.
+Dabei k"onnen Sie den Abschnitt 1 - Installation des Compilers "uberspringen,
+wenn Sie den MOCKA-Compiler bereits installiert haben\footnote{Dies ist
+der Fall, wenn Sie in einer Shell mit 'mocka' oder 'mc'
+eine Meldung 'Mocka XXXX' erhalten. Verlassen k"onnen Sie MOCKA durch Eingabe
+von 'q' und Enter.} oder das Praktikum in C++ machen wollen.
+In jedem Fall m"ussen Sie die Installation als Superuser (root) durchf"uhren.
+Wenn Sie also noch nicht als root eingeloggt sind, so loggen Sie sich jetzt
+bitte aus und melden sich als root wieder an.
+
+\subsection{Schritt f"ur Schritt}
+Bei allen Kommandos gilt: Die umschlie"senden Hochkommata (') d"urfen nicht
+mit eingegeben werden!! Je nach verwendeter Version der MTools k"onnen die
+Dateinamen auch durchg"angig gro"sgeschrieben sein; dann ist bei den
+Kopieroperationen der Zieldateiname unbedingt mit anzugeben; andernfalls
+kann dieser weggelassen werden. Ebenso sind dann die Namen der Archive und
+der zu kopierenden Dateien durchg"angig gro"s zu schreiben.
+
+\subsubsection{Abschnitt 0 - Vorbereitungen}
+\begin{enumerate}
+\item{Diskette einlegen}
+\item{Wechsel nach /tmp: 'cd /tmp'}
+\item{Erstellen eines Hilfsverzeichnisses: 'mkdir sopra'}
+\item{Wechsel in dieses Verzeichnis: 'cd sopra'}
+\item{Kopieren der Dateien: 'mcopy a:*.* .'}
+\end{enumerate}
+
+\subsubsection{Abschnitt 1 - Installation des Compilers}
+\begin{enumerate}
+\item{Wechsel nach /usr/local: 'cd /usr/local'}
+\item{Entpacken des Archivs: 'tar -xzf /tmp/sopra/mocka.tgz'}
+\item{Installieren:}
+\begin{enumerate}
+\item{Wechsel nach mocka: 'cd mocka'}
+\item{Installation: 'make install'}
+\item{Wechsel nach /usr/local/bin: 'cd /usr/local/bin'}
+\item{Anlegen eine Links von mc nach mocka: 'ln -s mc mocka'}
+\end{enumerate}
+\end{enumerate}
+
+\subsubsection{Abschnitt 2 - Installation von XGraphic}
+\begin{enumerate}
+\item{Wechsel nach /tmp: 'cd /tmp/sopra'}
+\item{Kopieren des Modula-Pr"aprozessors: 'cp m2pp /usr/local/bin/m2pp'}
+\item{Kopieren des ge"anderten Linkskriptes: 'cp link /usr/local/mocka/sys/link'}
+\item{Setzen der Umgebungsvariable OSNAME: 'export OSNAME=Linux'}
+\item{Entpacken des Archivs: 'tar -xzf ./xgraphic.tgz'}
+\item{"Ubersetzen und installieren:}
+\begin{itemize}
+\item{F"ur MOCKA: 'make mockainstall'}
+\item{F"ur C/C++: 'make cinstall'}
+\end{itemize}
+\end{enumerate}
+
+\subsubsection{Abschnitt 3 - Installation von nsgmls}
+Nsgmls ist das Hilfsprogramm, mit dem Sie aus HTML-Dateien die f"ur
+Ihr Programm ben"otigten Eingabedateien generieren werden.
+
+\begin{enumerate}
+\item{Entpacken der Programme: 'tar -xzf nsgmls.tgz'}
+\item{Installation der Programme: './instsgml.sh'}
+\item{Wechsel nach /usr/local: 'cd /usr/local'}
+\item{Anlegen des Katalog-Verzeichnisses: 'mkdir sgml'}
+\item{Wechsel in dieses Verzeichnis: 'cd sgml'}
+\item{Entpacken der Hilfsdateien: 'tar -xzf /tmp/sopra/sgml.tgz'}
+\item{Wechsel nach /etc: 'cd /etc'}
+\item{Editieren von profile: 'vi profile', es m"ussen folgende Zeilen
+eingef"ugt werden:}
+\begin{itemize}
+\item{export SGML\_SEARCH\_PATH=/usr/local/sgml;}
+\item{export SGML\_CATALOG\_FILES=/usr/local/sgml/catalog;}
+\item{export OSNAME=Linux;}
+\end{itemize}
+\item{Aufr"aumen: 'rm -rf /tmp/sopra'}
+\end{enumerate}
+
+\end{document}

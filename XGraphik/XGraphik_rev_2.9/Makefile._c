@@ -1,0 +1,40 @@
+# Allgemeine Variablen einbinden
+include Make.src
+
+# Systemabhaengige Variablen einlesen
+include Make.$(OSNAME)
+
+all:	libXGraphic.a graftest simple
+
+.c.o:
+	$(CC) $(CFLAGS) -c $*.c
+
+XGraphic.o:	$(INTERNOBJECTS) XGraphic.c XGraphic.h
+
+Draw.o:		Draw.c Intern.h
+
+Filebrowser.o:	Filebrowser.c Intern.h
+
+Haupt.o:	Haupt.c Intern.h Menues.h
+
+InputIntStr.o:	InputIntStr.c Intern.h
+
+Menues.o:	Menues.c Intern.h Menues.h
+
+libXGraphic.a:	XGraphic.o $(INTERNOBJECTS)
+	ar rus libXGraphic.a XGraphic.o $(INTERNOBJECTS)
+
+graftest:	graftest.o libXGraphic.a
+	$(CC) $(CFLAGS) -o graftest graftest.o -L. -lXGraphic $(CXGRAPHICSLIBS) -lm
+
+graftest.o:	graftest.c XGraphic.h
+
+simple:		simple.o libXGraphic.a
+	$(CC) $(CFLAGS) -o simple simple.o -L. -lXGraphic $(CXGRAPHICSLIBS) -lm
+clean:
+	rm -f *.o core graftest simple
+
+install:	libXGraphic.a
+	cp libXGraphic.a /usr/local/lib
+	cp XGraphic.h /usr/local/include
+

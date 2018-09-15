@@ -1,0 +1,11 @@
+DEFINITION MODULE args; 
+
+FROM Types IMPORT SHORTCARD;
+
+TYPE  Str   = ARRAY [0..999] OF CHAR;
+      Feld     = ARRAY [0..999] OF POINTER TO Str;
+      ArgTable = POINTER TO Feld;
+
+PROCEDURE GetArgs(VAR argc:SHORTCARD;VAR argv:ArgTable);
+
+END args.
