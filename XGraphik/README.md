@@ -23,3 +23,12 @@ After unpacking you need to run
  2) xset fp+ <Path to the fonts>/75dpi
     xset fp+ <Path to the fonts>/100dpi
     xset fp+ rehash
+
+
+Status:
+I use the Mocka Compiler version "Mocka 0608m".
+
+The Revision 2.9 of XGraphik is - currently - the version, which "works" best. 
+
+THIS WHOLE PROJECT IS STILL WORK-IN-PROGRESS.
+
